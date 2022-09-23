@@ -20,9 +20,11 @@ def hello():
 @app.route('/addNewPlayer', methods = ["POST"])
 def addNewPlayer():
     #processes request to get data
-    data = request.get_json()
+    data = request.form
+    print(data)
     #saves name that needs to be added
-    nameToBeAdded = data['Name']
+    nameToBeAdded = data['PlayerName']
+
 
     #checks to see if name exists in database already
     if records.find({}):

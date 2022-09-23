@@ -6,6 +6,19 @@
     <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
 </head>
 <body>
-   <h1>Welcome to the Washington University Billiards Club</h1>
+    <div class = "background background_img">
+        <h1>Welcome to the Washington University Billiards Club</h1>
+   
+        <form action = '/addNewPlayer' method = "post"> 
+            <label for = "PlayerName">Enter New PlayerName</label>
+            <input type = "text" name = "PlayerName" id = "PlayerName">
+            <button type = "submit" name = "newPlayer" >
+                Submit
+            </button>
+
+        </form>
+    </div>
+    
 </body>
+
 </html>
