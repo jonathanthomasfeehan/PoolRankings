@@ -24,16 +24,19 @@ def addNewPlayer():
     print(data)
     #saves name that needs to be added
     nameToBeAdded = data['PlayerName']
-
-
+    print(nameToBeAdded)
+    print(records.find({}))
     #checks to see if name exists in database already
-    if records.find({}):
-        for record in records.find({}):
-            if record['Name'] == nameToBeAdded:
-                #fix error code
-                return 'false', 418
-                
-    db.records.inset({"Name": nameToBeAdded, "Rating": constants.StartingRating, "Matches": "0" })
+    # if records.find({}):
+    #     for record in records.find({}):
+    #         print("inside for loop")
+    #         if record['Name'] == nameToBeAdded:
+    #             #fix error code
+    #             print("name found")
+    #             return 'false', 418
+    print("Outside of for loop")
+    db.records.insert({"Name": nameToBeAdded, "Rating": constants.StartingRating, "Matches": "0" })
+    print(records.find({"Jonathan"}))
     return 'done', 201
 
 
