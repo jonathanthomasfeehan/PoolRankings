@@ -5,8 +5,6 @@ import constants
 
 app = Flask(__name__)
 
-
-
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 db = myclient["PoolRankings"]
 
@@ -21,7 +19,7 @@ else:
 
 @app.route('/')
 def hello():
-    return render_template('index.html')
+    return render_template("index.html")
 
 
 @app.route('/addNewPlayer', methods = ["POST"])
