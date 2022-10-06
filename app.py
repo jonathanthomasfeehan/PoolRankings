@@ -1,10 +1,13 @@
-from flask import Flask, render_template, request
-import pymongo
+
 import json
 import constants
+from flask import Flask, render_template
+import pymongo
 
 app = Flask(__name__)
 
+if __name__=='__main__':
+    app.run(debug=False, host='0.0.0.0')
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 db = myclient["PoolRankings"]
 
