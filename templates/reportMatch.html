@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pool Rankings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+</head>
+<body>
+    <div class = "background background_img">
+        <h1>Match Reporting</h1>
+
+        <label for = "PlayerName1">Enter first player name</label>
+        <input type = "text" name = "PlayerName1" id = "PlayerName1">
+        <label for ="PlayerName2"> Enter second player name</label>
+        <input type = "text" name = "PlayerName2" id = "PlayerName2">
+        <label for ="Winner"> Enter name of winner</label>
+        <input type = "text" name = "Winner" id = "Winner">
+        <button onclick = 'sendData()', id="reportMatchFormButton" >
+            Submit
+        </button>
+    
+    </div>
+    
+</body>
+<script>
+
+    function sendData(){
+        console.log("Inside function")
+        let player1 = document.getElementById('PlayerName1').value
+        let player2 = document.getElementById('PlayerName2').value
+        let winner = document.getElementById('Winner').value
+        console.log(player1)
+        console.log(player2)
+
+        $.ajax({
+            url:'/addMatchToDatabase',
+            type:'POST',
+            data:{'PlayerName1':player1, 'PlayerName2':player2, 'Winner':winner},
+            success:function(){
+                window.location.replace("/");
+            }
+        })
+    }
+</script>
+
+</html>
