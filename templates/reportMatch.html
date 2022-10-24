@@ -26,14 +26,16 @@
 </body>
 <script>
 
+    // TODO add authentication to match reporting to minimize exploits
+
+    // TODO fix input names and ids
+
     function sendData(){
         console.log("Inside function")
         let player1 = document.getElementById('PlayerName1').value
         let player2 = document.getElementById('PlayerName2').value
         let winner = document.getElementById('Winner').value
-        console.log(player1)
-        console.log(player2)
-
+        // sends post request, if successful then returns client to home page
         $.ajax({
             url:'/addMatchToDatabase',
             type:'POST',
