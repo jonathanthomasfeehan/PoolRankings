@@ -4,22 +4,24 @@
     <meta charset="UTF-8">
     <title>Pool Rankings</title>
     <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
 </head>
 <body>
     <div class = "background background_img">
         <h1>Welcome to the Washington University Billiards Club</h1>
    
-        <form action = '/addNewPlayer' method = "post"> 
             <label for = "PlayerName">Enter New PlayerName</label>
-            <input type = "text" name = "PlayerName" id = "PlayerName">
-            <button type = "submit" name = "newPlayer" >
+            <input type = "text" name = "PlayerName" id = "PlayerToAdd">
+            <button onclick = sendData() name = "newPlayer" >
                 Submit
             </button>
 
-        </form>
-
         <form action = '/ReportMatch'>
             <button type = 'submit' name = 'reportMatch'>Report a match</button>
+        </form>
+        <form action = '/showRankings'>
+            <button type = 'submit' >See Rankings</button>
         </form>
     </div>
     
@@ -33,6 +35,31 @@
 
     // TODO     Display current player rankings, either on this page or a new one
     //          Could use d3.js for visualizations, may be overkill
+
+
+    function sendData(){
+        console.log("Inside function")
+        let playerToAdd = document.getElementById('PlayerToAdd').value
+        // sends post request, if successful then alerts client
+        $.ajax({
+            url:'/addNewPlayer',
+            type:'POST',
+            data:{'PlayerName':playerToAdd},
+            success:function(){
+                alert(playerToAdd + " added to database")
+                document.getElementById("PlayerToAdd").value = "";
+
+            },
+            failure:function(){
+                if(Response==418) {
+                    alert("Player already in database")
+                }else{
+                    alert("Could not add player, please try again")
+                }
+            }
+
+        })
+    }
 
 </script>
 

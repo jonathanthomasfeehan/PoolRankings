@@ -12,15 +12,28 @@
         <h1>Match Reporting</h1>
 
         <label for = "PlayerName1">Enter first player name</label>
-        <input type = "text" name = "PlayerName1" id = "PlayerName1">
+        <input type = "text" name = "PlayerName1" id = "PlayerName1" onchange="document.getElementById('firstPlayerLabel').innerHTML = document.getElementById('PlayerName1').value; document.getElementById('firstPlayer').value=document.getElementById('PlayerName1').value">
         <label for ="PlayerName2"> Enter second player name</label>
-        <input type = "text" name = "PlayerName2" id = "PlayerName2">
-        <label for ="Winner"> Enter name of winner</label>
-        <input type = "text" name = "Winner" id = "Winner">
+        <input type = "text" name = "PlayerName2" id = "PlayerName2" onchange="document.getElementById('secondPlayerLabel').innerHTML = document.getElementById('PlayerName2').value; document.getElementById('secondPlayer').value=document.getElementById('PlayerName2').value">
+
+    </div>
+    <div>
+        <h3>Select a winner</h3>
+        <form>
+            <input type = "radio" name = "winner" id = "firstPlayer" value = "PlayerName1">
+            <label for = "firstPlayer" id="firstPlayerLabel">Player 1 </label>
+            <input type = "radio" name = "winner" id = "secondPlayer" value = "PlayerName2">
+            <label for = "secondPlayer" id = "secondPlayerLabel">Player 2 </label>
+
+        </form>
+        
+    
+    </div>
+
+    <div>
         <button onclick = 'sendData()', id="reportMatchFormButton" >
             Submit
         </button>
-    
     </div>
     
 </body>
@@ -31,10 +44,23 @@
     // TODO fix input names and ids
 
     function sendData(){
-        console.log("Inside function")
         let player1 = document.getElementById('PlayerName1').value
         let player2 = document.getElementById('PlayerName2').value
-        let winner = document.getElementById('Winner').value
+        let winner = null
+        let winners = document.getElementsByName('winner')
+        console.log(winners)
+        console.log(winners.length)
+        for (let i =0; i<winners.length; i++) {
+            if (winners[i].checked) {
+                winner = winners[i].value
+            }
+        }
+        console.log(winner)
+        if(winner ==null) {
+            alert("Please select a winner")
+            return
+        }
+        
         // sends post request, if successful then returns client to home page
         $.ajax({
             url:'/addMatchToDatabase',
@@ -42,6 +68,9 @@
             data:{'PlayerName1':player1, 'PlayerName2':player2, 'Winner':winner},
             success:function(){
                 window.location.replace("/");
+            },
+            failure:function(){
+                alert("Unable to report match")
             }
         })
     }

@@ -1,8 +1,7 @@
 
-import json
 from pydoc import render_doc
 import constants
-from flask import Flask, render_template, request
+from flask import Flask, jsonify, render_template, request
 import pymongo
 # TODO clean up excess imports
 
@@ -104,6 +103,17 @@ def addNewPlayer():
     #creats new record if one does not alreadt exist
     db.Records.insert_one({"Name": nameToBeAdded, "Rating": constants.StartingRating, "Matches": "0" })
     return 'done', 201
+
+@app.route('/showRankings')
+def displayRankings():
+    return render_template('showRankings.html')
+
+@app.route('/getRankings' , methods = ['POST'])
+def getRankings():
+    data = list(records.find({},{'Rating':1,'Name':1, '_id':0}))
+    print(data)
+    data = jsonify(data)
+    return data, 200
 
 
 #use for local development
