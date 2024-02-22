@@ -1,12 +1,19 @@
 
 from pydoc import render_doc
-import constants
 from flask import Flask, jsonify, render_template, request
 import pymongo
+from werkzeug.security import generate_password_hash, check_password_hash
 # TODO clean up excess imports
+import auth
+
+#constants
+STARTING_RATING = 500
+K = 32
+D = 400
+
 
 app = Flask(__name__)
-
+# app.register_blueprint(auth.bp)
 
 #
 # Uncomment when pushing to main, required for live build
@@ -35,8 +42,8 @@ records = db.Records
 
 
 @app.route('/')
-def hello():
-    #TODO fix function name
+def index():
+    #TODO: fix function name
     #render homepage
     return render_template("index.html")
 
@@ -48,7 +55,7 @@ def reportMatch_page():
 
 def calculate_expected(player1, player2):
     #calculate expected win rate using elo formula
-    return (1/(1+(10**( (records.find_one({'Name':player2})['Rating'] - records.find_one({'Name':player1})['Rating'])/constants.D))))
+    return (1/(1+(10**( (records.find_one({'Name':player2})['Rating'] - records.find_one({'Name':player1})['Rating'])/D))))
 
 
 ### start of function to add player matches
@@ -57,11 +64,14 @@ def report_match():
     #Get data from post request
     data=request.form
     # 
-    # TODO filter input
     #   
     # Get input
     player1 = data.get("PlayerName1")
     player2 = data.get("PlayerName2")
+
+    if records.find_one({'Name':player1}) == None or records.find_one({'Name':player2}) == None:
+        return "Names not found", 400
+
     winner = data.get("Winner")
 
     #Calculate expected win rates for both players
@@ -78,8 +88,8 @@ def report_match():
         return "No winner selected" , 400
 
     #update database with new ratings
-    records.update_one({"Name":player1},{"$set" :{"Rating": (records.find_one({"Name":player1})['Rating'] + constants.K*(result[0]-player1_expected))}})
-    records.update_one({"Name":player2},{"$set" :{"Rating": (records.find_one({"Name":player2})['Rating'] + constants.K*(result[1]-player2_expected))}})
+    records.update_one({"Name":player1},{"$set" :{"Rating": (records.find_one({"Name":player1})['Rating'] + K*(result[0]-player1_expected)), "Matches": (records.find_one({'Name':player1})['Matches']+1)}})
+    records.update_one({"Name":player2},{"$set" :{"Rating": (records.find_one({"Name":player2})['Rating'] + K*(result[1]-player2_expected)), "Matches": (records.find_one({'Name':player2})['Matches']+1)}})
 
     #return successful code
     return 'done' , 200
@@ -92,16 +102,23 @@ def addNewPlayer():
 
     #saves name that needs to be added
     nameToBeAdded = data['PlayerName']
+    password = data['Password']
+    password_cconfirmation = data['Password_confirmation']
+
+    if(password != password_cconfirmation):
+        return 'false', 400
+    
+
 
     # checks to see if name exists in database already
-    # TODO look for better implementation, this was copied from previous project
+    # TODO: look for better implementation, this was copied from previous project
     if records.find({}):
         for record in records.find({}):
             if record['Name'] == nameToBeAdded:
                 # TODO fix error code
                 return 'false', 418  
     #creats new record if one does not alreadt exist
-    db.Records.insert_one({"Name": nameToBeAdded, "Rating": constants.StartingRating, "Matches": "0" })
+    db.Records.insert_one({"Name": nameToBeAdded, "Password": generate_password_hash(password),  "Rating": STARTING_RATING, "Matches": 0 })
     return 'done', 201
 
 @app.route('/showRankings')
@@ -114,6 +131,16 @@ def getRankings():
     print(data)
     data = jsonify(data)
     return data, 200
+
+
+@app.route('/register')
+def show_registration():
+    print('HERE')
+    return render_template('register.html')
+
+
+
+
 
 
 #use for local development

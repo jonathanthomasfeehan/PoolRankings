@@ -39,9 +39,9 @@
 </body>
 <script>
 
-    // TODO add authentication to match reporting to minimize exploits
+    // TODO: add authentication to match reporting to minimize exploits
 
-    // TODO fix input names and ids
+    // TODO: fix input names and ids
 
     function sendData(){
         let player1 = document.getElementById('PlayerName1').value
@@ -63,15 +63,27 @@
         
         // sends post request, if successful then returns client to home page
         $.ajax({
+
+            statusCode:{
+                200: function(){
+                    window.location.replace("/");
+                },
+                400: function(){
+                    alert("The players were not found or the winner was not selected. Please try again.")
+                },
+                500: function(){
+                    alert("The server is unable to process this request right now.")
+                }
+
+            },
+
+
             url:'/addMatchToDatabase',
             type:'POST',
+            contentType:'application/json',
+            dataType:'json',
             data:{'PlayerName1':player1, 'PlayerName2':player2, 'Winner':winner},
-            success:function(){
-                window.location.replace("/");
-            },
-            failure:function(){
-                alert("Unable to report match")
-            }
+            
         })
     }
 </script>

@@ -4,63 +4,57 @@
     <meta charset="UTF-8">
     <title>Pool Rankings</title>
     <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/index.css') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 </head>
 <body>
-    <div class = "background background_img">
-        <h1>Welcome to the Washington University Billiards Club</h1>
-   
-            <label for = "PlayerName">Enter New PlayerName</label>
-            <input type = "text" name = "PlayerName" id = "PlayerToAdd">
-            <button onclick = sendData() name = "newPlayer" >
-                Submit
-            </button>
+    <!-- <nav>
+        <ul>
+            {% if g.user %}
+                <li><span>{{ g.user['username'] }}</span>
+                <li><a href="./">Log Out</a>
+            {% else %}
+                <li><a href="/register">Register</a>
+                <li><a href="./">Log In</a>
+            {% endif %}
+        </ul>
+    </nav> -->
+    <!-- <div class = "background background_img"> -->
+        <!-- <h1>Welcome to the Washington University Billiards Club</h1> -->
+        <div class="float_container">
+            <div id="title">
+                <p>
+                    Washington
+                </p>
+                <p>
+                    University
+                </p>
+                <p>
+                    Billiards Club
+                </p>
+            </div>
+            <div>
 
-        <form action = '/ReportMatch'>
-            <button type = 'submit' name = 'reportMatch'>Report a match</button>
-        </form>
-        <form action = '/showRankings'>
-            <button type = 'submit' >See Rankings</button>
-        </form>
-    </div>
+            </div>
+
+        </div>
+   
+
+        <div id="index_buttons">
+            <form action = '/ReportMatch'>
+                <button type = 'submit' name = 'reportMatch' class="index_nav_buttons">Report a match</button>
+            </form>
+            <form action = '/showRankings'>
+                <button type = 'submit' class="index_nav_buttons">See Rankings</button>
+            </form>
+        </div>
+            
+        
+        
+    <!-- </div> -->
     
 </body>
 
-<script>
-    // TODO     Substitute form for ajax request like on reportMatch.html.
-    //          Allows for better navgation and control in sending requests and redirecting
-
-    // TODO     Add css/cs styling
-
-    // TODO     Display current player rankings, either on this page or a new one
-    //          Could use d3.js for visualizations, may be overkill
-
-
-    function sendData(){
-        console.log("Inside function")
-        let playerToAdd = document.getElementById('PlayerToAdd').value
-        // sends post request, if successful then alerts client
-        $.ajax({
-            url:'/addNewPlayer',
-            type:'POST',
-            data:{'PlayerName':playerToAdd},
-            success:function(){
-                alert(playerToAdd + " added to database")
-                document.getElementById("PlayerToAdd").value = "";
-
-            },
-            failure:function(){
-                if(Response==418) {
-                    alert("Player already in database")
-                }else{
-                    alert("Could not add player, please try again")
-                }
-            }
-
-        })
-    }
-
-</script>
 
 </html>
