@@ -5,6 +5,7 @@ import pymongo
 from werkzeug.security import generate_password_hash, check_password_hash
 # TODO clean up excess imports
 import auth
+import os
 
 #constants
 STARTING_RATING = 500
@@ -21,24 +22,42 @@ app = Flask(__name__)
 # if __name__=='__main__':
 #     app.run(debug=False, host='0.0.0.0')
 
+# TODO:
+# may need to write mongodb shell script to initialize database with docker compose
 
 #connect to database
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+ 
+mongo_host = "database"
+host_port = 27017
+mongo_db = os.environ.get("MONGO_DB")
+db_username = os.environ.get("MONGO_USER")
+db_pwd = os.environ.get("MONGO_PASSWORD")
+db_collection = os.environ.get("MONGO_COLLECTION")
 
+print(mongo_db)
+print(db_username)
+print(db_pwd)
+
+myclient = pymongo.MongoClient(f'mongodb://{db_username}:{db_pwd}@{mongo_host}:{host_port}/{mongo_db}?authSource={mongo_db}')
+# myclient = pymongo.MongoClient(username=db_username, password=db_pwd,)
+# myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+print("connected to database")
+# print(myclient.database_names())
 #select correct collection
-db = myclient["PoolRankings"]
+db = myclient[mongo_db]
 
 #checks to see if database exists
-if(db.get_collection("Records")is not None):
-    records = db.get_collection('Records')
-else:
-    print("No Records collection found. Check database settings")
-    exit()
+# if(db.get_collection("Records")is not None):
+#     records = db.get_collection('Records')
+#     print("found collection")
+# else:
+#     print("No Records collection found. Check database settings")
+#     exit()
 
 #assigns database collection to local variable
 records = db.Records
 
-
+print("DATABASE IS RUNNING")
 
 
 @app.route('/')
@@ -61,6 +80,7 @@ def calculate_expected(player1, player2):
 ### start of function to add player matches
 @app.route('/addMatchToDatabase', methods = ["POST"])
 def report_match():
+    print("IN MATCH REPORTING")
     #Get data from post request
     data=request.form
     # 
@@ -103,9 +123,9 @@ def addNewPlayer():
     #saves name that needs to be added
     nameToBeAdded = data['PlayerName']
     password = data['Password']
-    password_cconfirmation = data['Password_confirmation']
+    password_confirmation = data['Password_confirmation']
 
-    if(password != password_cconfirmation):
+    if(password != password_confirmation):
         return 'false', 400
     
 
@@ -145,4 +165,4 @@ def show_registration():
 
 #use for local development
 if __name__=='__main__':
-    app.run(debug = True, host='0.0.0.0')
+    app.run(debug = True, host='0.0.0.0', port=8000)
