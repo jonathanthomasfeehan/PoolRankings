@@ -34,14 +34,10 @@ db_username = os.environ.get("MONGO_USER")
 db_pwd = os.environ.get("MONGO_PASSWORD")
 db_collection = os.environ.get("MONGO_COLLECTION")
 
-print(mongo_db)
-print(db_username)
-print(db_pwd)
 
 myclient = pymongo.MongoClient(f'mongodb://{db_username}:{db_pwd}@{mongo_host}:{host_port}/{mongo_db}?authSource={mongo_db}')
 # myclient = pymongo.MongoClient(username=db_username, password=db_pwd,)
 # myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-print("connected to database")
 # print(myclient.database_names())
 #select correct collection
 db = myclient[mongo_db]
@@ -56,8 +52,6 @@ db = myclient[mongo_db]
 
 #assigns database collection to local variable
 records = db.Records
-
-print("DATABASE IS RUNNING")
 
 
 @app.route('/')
@@ -165,4 +159,4 @@ def show_registration():
 
 #use for local development
 if __name__=='__main__':
-    app.run(debug = True, host='0.0.0.0', port=8000)
+    app.run(debug = True, host='0.0.0.0', port=5000)
