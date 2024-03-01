@@ -12,8 +12,14 @@
     <div id="navigation_bar"></div>
     <h1>Rankings</h1>
     <div id="list">
-     
     </div>
+     
+    <div>
+        <form action = '/'>
+            <button type = 'submit' name = 'home' class="index_nav_buttons">Home</button>
+        </form>
+    </div>
+    
 
 <!--    
     
@@ -44,11 +50,9 @@
     // })
 
     function displayData(data){
-        console.log("IN function")
-        console.log(data)
         for (row in data) {
             console.log(row)
-            document.getElementById('list').innerHTML += ("<p>" + data[row].Name + ": " + (+(data[row].Rating)).toFixed(3) + " </p>")
+            document.getElementById('list').innerHTML += ("<div class=list_row> <div class=align_left> <p>" + data[row].Name + "</p></div><div class=align_right>  <p>" + (+(data[row].Rating)).toFixed(3) + " </p></div>")
         }
     }
 
