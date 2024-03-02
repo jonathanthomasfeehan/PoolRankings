@@ -1,8 +1,8 @@
-body{
+/* body{
     background-image: url("./../src/index_background_wide_2k.jpg");
     background-repeat: no-repeat;
     background-size: cover;
-}
+} */
 
 .float_container{
     display: flex;
@@ -41,6 +41,56 @@ body{
     font-size: x-large;
     background-color: #6b0b0b;
     padding: 20px 50px 20px 50px;
+    margin-top: 20px;
 }
 
-/* TODO: add media query to select resized background image */
+#index_button{
+    width: 70%;
+}
+
+#register_button{
+    width: 70%;
+    margin-left: 15%;
+}
+
+
+
+@media only screen and (min-width: 768px) {
+    body{
+        background-image: url("./../src/index_background_wide_1080.jpg");
+        background-repeat: no-repeat;
+        background-size: cover
+    }
+}
+
+
+@media only screen and (min-width: 992px) {
+    body{
+        background-image: url("./../src/index_background_wide_1080.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+    #title{
+        color: white;
+        font-size: 80pt;
+        width: 40%;
+        margin-left: 5%;
+        margin-top: 300px;
+    }
+}
+
+
+@media only screen and (min-width: 1200px) {
+    body{
+        background-image: url("./../src/index_background_wide_1080.jpg");
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+    #register_button{
+        margin-top:20px;
+        width: 70%;
+        margin-left: 15%;
+    }
+}
