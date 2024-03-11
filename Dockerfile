@@ -47,5 +47,9 @@ COPY . .
 # Expose the port that the application listens on.
 EXPOSE 5000
 
+# Set flask env variable
+ENV FLASK_ENV=development
+
 # Run the application.
-CMD python ./app.py
+# Change to ./app.py when deploying
+CMD python /src/app.py

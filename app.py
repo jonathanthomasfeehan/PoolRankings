@@ -155,7 +155,8 @@ def show_registration():
 
 
 
-
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Disable caching of static files
 
 #use for local development
 if __name__=='__main__':

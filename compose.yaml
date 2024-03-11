@@ -30,10 +30,13 @@ services:
       - database
     volumes:
       - .:/src
+      - ./templates:/src/templates
+      - ./static:/src/static
     networks:
       - dbconnection
     env_file:
       - .env
+  
 
 
 
