@@ -108,31 +108,30 @@ def report_match():
     #return successful code
     return 'done' , 200
 
-
 @app.route('/addNewPlayer', methods = ["POST"])
 def addNewPlayer():
     #processes request to get data
     data = request.form
 
     #saves name that needs to be added
-    nameToBeAdded = data['PlayerName']
+    playerFirstName = data['PlayerFirstName']
+    playerLastName = data['PlayerLastName']
+    playerUsername = data['PlayerUsername']
     password = data['Password']
     password_confirmation = data['Password_confirmation']
 
     if(password != password_confirmation):
-        return 'false', 400
+        return 'false', 406
     
-
-
     # checks to see if name exists in database already
-    # TODO: look for better implementation, this was copied from previous project
-    if records.find({}):
-        for record in records.find({}):
-            if record['Name'] == nameToBeAdded:
-                # TODO fix error code
-                return 'false', 418  
-    #creats new record if one does not alreadt exist
-    db.Records.insert_one({"Name": nameToBeAdded, "Password": generate_password_hash(password),  "Rating": STARTING_RATING, "Matches": 0 })
+
+    try:
+        db.validate_collection['Users']
+        if records.count_documents({'Username':playerUsername}, limit=1):
+                return 'false', 470  
+    except pymongo.errors.OperationFailure:
+        #creates new record if one does not alreadt exist, stores only the password hash
+        records.insert_one({"FirstName": playerFirstName, "LastName": playerLastName, "Username":playerUsername, "Password": generate_password_hash(password),  "Rating": STARTING_RATING, "Matches": 0 })    
     return 'done', 201
 
 @app.route('/showRankings')
