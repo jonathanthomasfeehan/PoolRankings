@@ -13,23 +13,23 @@
     <div class="field_container">
         <div class="registration_field">
             <label for = "PlayerName">First Name</label>
-            <input type = "text" name = "PlayerName" id = "PlayerFirstName">
+            <input type = "text" name = "PlayerName" id = "PlayerFirstName" required>
         </div>
         <div class="registration_field">
             <label for = "PlayerName">Last Name</label>
-            <input type = "text" name = "PlayerLastName" id = "PlayerLastName">
+            <input type = "text" name = "PlayerLastName" id = "PlayerLastName" required>
         </div>
         <div class="registration_field">
             <label for = "Username">Username</label>
-            <input type = "text" name = "Username" id = "Username">
+            <input type = "text" name = "Username" id = "Username" required>
         </div>
         <div class="registration_field">
             <label for = "Password">Enter Password</label>
-            <input type = "text" name = "Password" id = "Password">
+            <input type = "text" name = "Password" id = "Password" required>
         </div>
         <div class="registration_field">
             <label for = "Password_confirmation">Confirm Password</label>
-            <input type = "text" name = "Password_confirmation" id = "Password_confirmation">
+            <input type = "text" name = "Password_confirmation" id = "Password_confirmation" required>
         </div>
         <div>
             <button onclick = sendData() name = "newPlayer" id="submit_button" >
@@ -43,10 +43,8 @@
 </body>
 
 <script>
-    // TODO     Substitute form for ajax request like on reportMatch.html.
+    // TODO:     Substitute form for ajax request like on reportMatch.html.
     //          Allows for better navgation and control in sending requests and redirecting
-
-    // TODO     Add css/cs styling
 
 
     function sendData(){
@@ -57,7 +55,6 @@
         let playerPasswordConfirmation = document.getElementById('Password_confirmation').value
 
         // sends post request, if successful then alerts client
-        // TODO: Make sure each field is required
         // 
         $.ajax({
             url:'/addNewPlayer',

@@ -74,7 +74,6 @@ def calculate_expected(player1, player2):
 ### start of function to add player matches
 @app.route('/addMatchToDatabase', methods = ["POST"])
 def report_match():
-    print("IN MATCH REPORTING")
     #Get data from post request
     data=request.form
     # 
@@ -131,8 +130,10 @@ def addNewPlayer():
                 return 'false', 470  
     except pymongo.errors.OperationFailure:
         #creates new record if one does not alreadt exist, stores only the password hash
-        records.insert_one({"FirstName": playerFirstName, "LastName": playerLastName, "Username":playerUsername, "Password": generate_password_hash(password),  "Rating": STARTING_RATING, "Matches": 0 })    
-    return 'done', 201
+        result = records.insert_one({"FirstName": playerFirstName, "LastName": playerLastName, "Username":playerUsername, "Password": generate_password_hash(password),  "Rating": STARTING_RATING, "Matches": 0 })    
+        if result:
+            return 'done', 201
+    return 'false', 500
 
 @app.route('/showRankings')
 def displayRankings():
@@ -148,7 +149,6 @@ def getRankings():
 
 @app.route('/register')
 def show_registration():
-    print('HERE')
     return render_template('register.html')
 
 
