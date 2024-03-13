@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Pool Rankings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/matchReporting.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
@@ -10,11 +11,18 @@
 <body>
     <div class = "background background_img">
         <h1>Match Reporting</h1>
-
-        <label for = "PlayerName1">Enter first player name</label>
-        <input type = "text" name = "PlayerName1" id = "PlayerName1" onchange="document.getElementById('firstPlayerLabel').innerHTML = document.getElementById('PlayerName1').value; document.getElementById('firstPlayer').value=document.getElementById('PlayerName1').value">
-        <label for ="PlayerName2"> Enter second player name</label>
-        <input type = "text" name = "PlayerName2" id = "PlayerName2" onchange="document.getElementById('secondPlayerLabel').innerHTML = document.getElementById('PlayerName2').value; document.getElementById('secondPlayer').value=document.getElementById('PlayerName2').value">
+        <div class="flex_container">
+            <div class="flex_item">
+                <label for = "PlayerName1">Enter first player name</label>
+                <input type = "search" name = "PlayerName1" id = "PlayerName1" list="username_list" onchange="document.getElementById('firstPlayerLabel').innerHTML = document.getElementById('PlayerName1').value; document.getElementById('firstPlayer').value=document.getElementById('PlayerName1').value"> 
+            </div>
+            <div class="flex_item">
+                <label for ="PlayerName2"> Enter second player name</label>
+                <input type = "search" name = "PlayerName2" id = "PlayerName2" list="username_list" onchange="document.getElementById('secondPlayerLabel').innerHTML = document.getElementById('PlayerName2').value; document.getElementById('secondPlayer').value=document.getElementById('PlayerName2').value">    
+            </div>
+           
+        </div>
+        
 
     </div>
     <div>
@@ -36,12 +44,35 @@
         </button>
     </div>
     
+    <datalist id="username_list">
+    </datalist>
+
+
+
 </body>
 <script>
 
+    window.onload = function getUsernames(){
+    // function getUsernames(){
+        $.ajax({
+            success:function(data){
+                console.log(data)
+                for (record in data){
+                    console.log(record)
+                    document.getElementById("username_list").innerHTML += ("<option value= " + data[record].Username + "> \n")
+                }
+            },
+            failure:function(){
+                alert("Trouble contacting server")
+            },
+            url:'/getUsernames'
+        })
+    }
+
     // TODO: add authentication to match reporting to minimize exploits
 
-    // TODO: fix input names and ids
+
+    // FIXME: Make sure valid usernames are selected
 
     function sendData(){
         let player1 = document.getElementById('PlayerName1').value
@@ -61,6 +92,8 @@
             return
         }
         
+        console.log(player1)
+        console.log(player2)
         // sends post request, if successful then returns client to home page
         $.ajax({
 
@@ -80,9 +113,7 @@
 
             url:'/addMatchToDatabase',
             type:'POST',
-            contentType:'application/json',
-            dataType:'json',
-            data:{'PlayerName1':player1, 'PlayerName2':player2, 'Winner':winner},
+            data:{'PlayerUsername1':player1, 'PlayerUsername2':player2, 'Winner':winner}
             
         })
     }
