@@ -52,7 +52,7 @@
     function displayData(data){
         for (row in data) {
             console.log(row)
-            document.getElementById('list').innerHTML += ("<div class=list_row> <div class=align_left> <p>" + data[row].Name + "</p></div><div class=align_right>  <p>" + (+(data[row].Rating)).toFixed(3) + " </p></div>")
+            document.getElementById('list').innerHTML += ("<div class=list_row> <div class=align_left> <p>" + data[row].FirstName + " " + data[row].LastName + "</p></div><div class=align_right>  <p>" + (+(data[row].Rating)).toFixed(3) + " </p></div>")
         }
     }
 

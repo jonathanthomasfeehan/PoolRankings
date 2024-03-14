@@ -151,7 +151,7 @@ def displayRankings():
 
 @app.route('/getRankings' , methods = ['POST'])
 def getRankings():
-    data = list(RECORDS.find({},{'Rating':1,'Name':1, '_id':0}))
+    data = list(RECORDS.find({},{'Rating':1,'FirstName':1, "LastName":1, '_id':0}))
     data = jsonify(data)
     return data, 200
 
