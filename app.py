@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # TODO clean up excess imports
 import auth
 import os
+import datetime
 
 #constants
 STARTING_RATING = 500
@@ -41,15 +42,16 @@ myclient = pymongo.MongoClient(f'mongodb://{db_username}:{db_pwd}@{mongo_host}:{
 db = myclient[mongo_db]
 
 #checks to see if database exists
-# if(db.get_collection("Records")is not None):
-#     records = db.get_collection('Records')
+# if(db.get_collection("RECORDS")is not None):
+#     RECORDS = db.get_collection('RECORDS')
 #     print("found collection")
 # else:
-#     print("No Records collection found. Check database settings")
+#     print("No RECORDS collection found. Check database settings")
 #     exit()
 
 #assigns database collection to local variable
-records = db.Records
+RECORDS = db.RECORDS
+MATCHES = db.MATCHES
 
 
 @app.route('/')
@@ -66,27 +68,23 @@ def reportMatch_page():
 
 def calculate_expected(player1, player2):
     #calculate expected win rate using elo formula
-    return (1/(1+(10**( (records.find_one({'Username':player2})['Rating'] - records.find_one({'Username':player1})['Rating'])/D))))
+    return (1/(1+(10**( (RECORDS.find_one({'Username':player2})['Rating'] - RECORDS.find_one({'Username':player1})['Rating'])/D))))
 
 
 ### start of function to add player matches
 @app.route('/addMatchToDatabase', methods = ["POST"])
 def report_match():
     #Get data from post request
-    print("IN MATCH REPORTING")
-    print(request)
-    print(request.values)
+
     data=request.values
     # 
     #   
     # Get input
-    print(data)
     player1 = data['PlayerUsername1']
     player2 = data["PlayerUsername2"]
-    print(player1)
-    print(player2)
 
-    if records.find_one({'Username':player1}) == None or records.find_one({'Username':player2}) == None:
+
+    if RECORDS.find_one({'Username':player1}) == None or RECORDS.find_one({'Username':player2}) == None:
         return "Names not found", 400
 
     winner = data.get("Winner")
@@ -104,9 +102,17 @@ def report_match():
     else:
         return "No winner selected" , 400
 
+
+    player1_old_score = RECORDS.find_one({"Username":player1})['Rating']
+    player2_old_score = RECORDS.find_one({"Username":player2})['Rating']
+
+    player1_new_score = player1_old_score + K*(result[0]-player1_expected)
+    player2_new_score = player2_old_score + K*(result[1]-player2_expected)
+
+    MATCHES.insert_one({"Player1":player1,"Player2":player2,"Player1_previous_score":player1_old_score,"Player2_previous_score":player2_old_score,"Player1_new_score":player1_new_score,"Player2_new_score":player2_new_score,"Date":datetime.datetime.now()})
     #update database with new ratings
-    records.update_one({"Username":player1},{"$set" :{"Rating": (records.find_one({"Username":player1})['Rating'] + K*(result[0]-player1_expected)), "Matches": (records.find_one({'Username':player1})['Matches']+1)}})
-    records.update_one({"Username":player2},{"$set" :{"Rating": (records.find_one({"Username":player2})['Rating'] + K*(result[1]-player2_expected)), "Matches": (records.find_one({'Username':player2})['Matches']+1)}})
+    RECORDS.update_one({"Username":player1},{"$set" :{"Rating": (player1_new_score), "Matches": (RECORDS.find_one({'Username':player1})['Matches']+1)}})
+    RECORDS.update_one({"Username":player2},{"$set" :{"Rating": (player2_new_score), "Matches": (RECORDS.find_one({'Username':player2})['Matches']+1)}})
 
     #return successful code
     return 'done' , 200
@@ -127,14 +133,14 @@ def addNewPlayer():
         return 'false', 406
     
     # checks to see if name exists in database already
-    # TODO: Update each place that records is referenced, replace with new collection called Users
+    # TODO: Update each place that RECORDS is referenced, replace with new collection called Users
     try:
         db.validate_collection('Users')
-        if records.count_documents({'Username':playerUsername}, limit=1):
+        if RECORDS.count_documents({'Username':playerUsername}, limit=1):
                 return 'false', 470  
     except pymongo.errors.OperationFailure:
         #creates new record if one does not alreadt exist, stores only the password hash
-        result = records.insert_one({"FirstName": playerFirstName, "LastName": playerLastName, "Username":playerUsername, "Password": generate_password_hash(password),  "Rating": STARTING_RATING, "Matches": 0 })    
+        result = RECORDS.insert_one({"FirstName": playerFirstName, "LastName": playerLastName, "Username":playerUsername, "Password": generate_password_hash(password),  "Rating": STARTING_RATING, "Matches": 0 })    
         if result:
             return 'done', 201
     return 'false', 500
@@ -145,7 +151,7 @@ def displayRankings():
 
 @app.route('/getRankings' , methods = ['POST'])
 def getRankings():
-    data = list(records.find({},{'Rating':1,'Name':1, '_id':0}))
+    data = list(RECORDS.find({},{'Rating':1,'Name':1, '_id':0}))
     data = jsonify(data)
     return data, 200
 
@@ -156,7 +162,7 @@ def show_registration():
 
 @app.route('/getUsernames')
 def getUsernames():
-    result = list(records.find({},{'Username':1, '_id':0}))
+    result = list(RECORDS.find({},{'Username':1, '_id':0}))
     print(result)
     data = jsonify(result)
     return data, 200
