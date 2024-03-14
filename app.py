@@ -54,6 +54,10 @@ RECORDS = db.RECORDS
 MATCHES = db.MATCHES
 
 
+
+# FIXME: implement security practices, CSRF attacks using tokens, XSS by escaping input
+
+
 @app.route('/')
 def index():
     #TODO: fix function name
