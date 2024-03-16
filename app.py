@@ -137,7 +137,6 @@ def addNewPlayer():
         return 'false', 406
     
     # checks to see if name exists in database already
-    # TODO: Update each place that RECORDS is referenced, replace with new collection called Users
     try:
         db.validate_collection('Users')
         if RECORDS.count_documents({'Username':playerUsername}, limit=1):
@@ -151,7 +150,12 @@ def addNewPlayer():
 
 @app.route('/showRankings')
 def displayRankings():
-    return render_template('showRankings.html')
+    data = list(RECORDS.find({},{'Rating':1,'FirstName':1, "LastName":1, '_id':0}))
+    print(data)
+    return render_template('showRankings.html', scores=data)
+    # return render_template('showRankings.html', scores="TESTING")
+
+
 
 @app.route('/getRankings' , methods = ['POST'])
 def getRankings():
