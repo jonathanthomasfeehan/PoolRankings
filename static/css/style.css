@@ -29,29 +29,3 @@ html{
 }
 
 
-
-#list{
-    align-items: center;
-    align-content: center;
-
-}
-.list_row{
-    display: flex;
-    flex-direction: row;
-}
-
-.align_left{
-    text-align: left;
-    border: 2px #eee solid;
-    width: 50%;
-    padding-left: 10%;
-
-}
-
-.align_right{
-    text-align: right;
-    border: 2px #eee solid;
-    width: 50%;
-    padding-right: 10px;
-
-}
