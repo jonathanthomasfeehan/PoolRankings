@@ -7,6 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import auth
 import os
 import datetime
+from flask_wtf import CSRFProtect
 
 #constants
 STARTING_RATING = 500
@@ -15,6 +16,9 @@ D = 400
 
 
 app = Flask(__name__)
+# FIXME: Implement actual secret key
+app.secret_key = 'sdfiasbdfiouahsycvohbeosb'
+csrf = CSRFProtect(app)
 # app.register_blueprint(auth.bp)
 
 #
@@ -79,6 +83,7 @@ def calculate_expected(player1, player2):
 @app.route('/addMatchToDatabase', methods = ["POST"])
 def report_match():
     #Get data from post request
+
 
     data=request.values
     # 
