@@ -16,8 +16,7 @@ D = 400
 
 
 app = Flask(__name__)
-# FIXME: Implement actual secret key
-app.secret_key = 'sdfiasbdfiouahsycvohbeosb'
+app.secret_key = os.environ.get("SECRET_KEY")
 csrf = CSRFProtect(app)
 # app.register_blueprint(auth.bp)
 

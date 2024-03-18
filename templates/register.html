@@ -36,6 +36,7 @@
                 Register User
             </button>
         </div>
+        <input type="hidden", id="csrf", name="csrf"  value="{{csrf_token()}}">
     </div>
 
     
@@ -53,13 +54,14 @@
         let playerUsername = document.getElementById('Username').value
         let playerPassword = document.getElementById('Password').value
         let playerPasswordConfirmation = document.getElementById('Password_confirmation').value
+        let csrf = document.getElementById("csrf").value
 
         // sends post request, if successful then alerts client
         // 
         $.ajax({
             url:'/addNewPlayer',
             type:'POST',
-            data:{'PlayerFirstName':playerFirstName, 'PlayerLastName':playerLastName, 'PlayerUsername':playerUsername, 'Password': playerPassword, 'Password_confirmation' : playerPasswordConfirmation},
+            data:{'PlayerFirstName':playerFirstName, 'PlayerLastName':playerLastName, 'PlayerUsername':playerUsername, 'Password': playerPassword, 'Password_confirmation' : playerPasswordConfirmation,"csrf_token":csrf },
             success:function(){
                 // alert(playerToAdd + " added to database")
                 document.getElementById("PlayerFirstName").value = "";
