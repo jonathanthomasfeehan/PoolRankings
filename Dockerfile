@@ -50,6 +50,11 @@ EXPOSE 5000
 # Set flask env variable
 ENV FLASK_ENV=development
 
+RUN pip install gunicorn
+
 # Run the application.
 # Change to ./app.py when deploying
-CMD python /src/app.py
+
+# TODO: SET UP GUNICORN ENTRYPOINT
+# CMD python /src/app.py
+CMD ["gunicorn" , "-c" , "gunicorn_config.py" , "app:app"]

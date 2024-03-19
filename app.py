@@ -8,6 +8,8 @@ import auth
 import os
 import datetime
 from flask_wtf import CSRFProtect
+from werkzeug.middleware.proxy_fix import ProxyFix
+
 
 #constants
 STARTING_RATING = 500
@@ -16,15 +18,11 @@ D = 400
 
 
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
+app.config['SERVER_NAME']='example.test'
 app.secret_key = os.environ.get("SECRET_KEY")
 csrf = CSRFProtect(app)
 # app.register_blueprint(auth.bp)
-
-#
-# Uncomment when pushing to main, required for live build
-#
-# if __name__=='__main__':
-#     app.run(debug=False, host='0.0.0.0')
 
 
 #connect to database
@@ -157,7 +155,6 @@ def displayRankings():
     data = list(RECORDS.find({},{'Rating':1,'FirstName':1, "LastName":1, '_id':0}))
     print(data)
     return render_template('showRankings.html', scores=data)
-    # return render_template('showRankings.html', scores="TESTING")
 
 
 
@@ -186,4 +183,4 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Disable caching of static files
 
 #use for local development
 if __name__=='__main__':
-    app.run(debug = True, host='0.0.0.0', port=5000)
+    app.run(debug = False, host='0.0.0.0', port=5000)
