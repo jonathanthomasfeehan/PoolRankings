@@ -18,8 +18,8 @@ D = 400
 
 
 app = Flask(__name__)
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
-app.config['SERVER_NAME']='example.test'
+# app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
+# app.config['SERVER_NAME']='localhost'
 app.secret_key = os.environ.get("SECRET_KEY")
 csrf = CSRFProtect(app)
 # app.register_blueprint(auth.bp)
@@ -55,8 +55,6 @@ RECORDS = db.RECORDS
 MATCHES = db.MATCHES
 
 
-
-# FIXME: implement security practices, CSRF attacks using tokens, XSS by escaping input
 
 
 @app.route('/')

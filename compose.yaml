@@ -34,25 +34,11 @@ services:
       - ./static:/src/static
     networks:
       - dbconnection
-      - http_server
     env_file:
       - .env
   
-  server:
-    build:
-      context: ./nginx_container
-    ports:
-      - 8000:80
-    networks:
-      - http_server
-    depends_on:
-      - flask_app
-
-
 
 networks:
   dbconnection:
     driver: bridge
-  http_server:
-    driver: bridge
-
+  
