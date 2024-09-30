@@ -9,7 +9,13 @@ import os
 import datetime
 from flask_wtf import CSRFProtect
 from werkzeug.middleware.proxy_fix import ProxyFix
-import pyrebase
+import json
+
+
+
+# def get_app_secret():
+
+
 
 
 #constants
@@ -21,18 +27,24 @@ D = 400
 app = Flask(__name__)
 # app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 # app.config['SERVER_NAME']='localhost'
-app.secret_key = os.environ.get("SECRET_KEY")
 csrf = CSRFProtect(app)
 # app.register_blueprint(auth.bp)
 
 
 #connect to database
+ 
 
-firebase = pyrebase.initialize_app(os.environ.get("GOOGLE_APPLICARION_CREDENTIALS"))
+#checks to see if database exists
+# if(db.get_collection("RECORDS")is not None):
+#     RECORDS = db.get_collection('RECORDS')
+#     print("found collection")
+# else:
+#     print("No RECORDS collection found. Check database settings")
+#     exit()
 
 #assigns database collection to local variable
-# RECORDS = db.RECORDS
-# MATCHES = db.MATCHES
+RECORDS = db.RECORDS
+MATCHES = db.MATCHES
 
 
 
@@ -161,4 +173,4 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Disable caching of static files
 
 #use for local development
 if __name__=='__main__':
-    app.run(debug = False, host='0.0.0.0', port=5000)
+    app.run(debug = True, host='0.0.0.0', port=5000)
