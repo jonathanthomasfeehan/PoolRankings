@@ -2,6 +2,7 @@
 from pydoc import render_doc
 from flask import Flask, jsonify, render_template, request
 import pymongo
+import pymongo.mongo_client
 from werkzeug.security import generate_password_hash, check_password_hash
 # TODO clean up excess imports
 import auth
@@ -15,7 +16,7 @@ import json
 
 # def get_app_secret():
 
-
+print ("\n\n\nWORKING\n\n\n")
 
 
 #constants
@@ -30,9 +31,10 @@ app = Flask(__name__)
 csrf = CSRFProtect(app)
 # app.register_blueprint(auth.bp)
 
-
+# ------------------
 #connect to database
- 
+# db = pymongo.mongo_client('mongodb://localhost:27017/')
+
 
 #checks to see if database exists
 # if(db.get_collection("RECORDS")is not None):
@@ -42,9 +44,13 @@ csrf = CSRFProtect(app)
 #     print("No RECORDS collection found. Check database settings")
 #     exit()
 
+
+
+
 #assigns database collection to local variable
-RECORDS = db.RECORDS
-MATCHES = db.MATCHES
+
+# RECORDS = db.RECORDS
+# MATCHES = db.MATCHES
 
 
 
