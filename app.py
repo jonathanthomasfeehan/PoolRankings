@@ -9,6 +9,7 @@ import os
 import datetime
 from flask_wtf import CSRFProtect
 from werkzeug.middleware.proxy_fix import ProxyFix
+import pyrebase
 
 
 #constants
@@ -26,33 +27,12 @@ csrf = CSRFProtect(app)
 
 
 #connect to database
- 
-mongo_host = "database"
-host_port = 27017
-mongo_db = os.environ.get("MONGO_DB")
-db_username = os.environ.get("MONGO_USER")
-db_pwd = os.environ.get("MONGO_PASSWORD")
-db_collection = os.environ.get("MONGO_COLLECTION")
 
-
-myclient = pymongo.MongoClient(f'mongodb://{db_username}:{db_pwd}@{mongo_host}:{host_port}/{mongo_db}?authSource={mongo_db}')
-# myclient = pymongo.MongoClient(username=db_username, password=db_pwd,)
-# myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-# print(myclient.database_names())
-#select correct collection
-db = myclient[mongo_db]
-
-#checks to see if database exists
-# if(db.get_collection("RECORDS")is not None):
-#     RECORDS = db.get_collection('RECORDS')
-#     print("found collection")
-# else:
-#     print("No RECORDS collection found. Check database settings")
-#     exit()
+firebase = pyrebase.initialize_app(os.environ.get("GOOGLE_APPLICARION_CREDENTIALS"))
 
 #assigns database collection to local variable
-RECORDS = db.RECORDS
-MATCHES = db.MATCHES
+# RECORDS = db.RECORDS
+# MATCHES = db.MATCHES
 
 
 
