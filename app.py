@@ -28,6 +28,7 @@ D = 400
 app = Flask(__name__)
 # app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 # app.config['SERVER_NAME']='localhost'
+app.config['SECRET_KEY'] = os.urandom(32)
 csrf = CSRFProtect(app)
 # app.register_blueprint(auth.bp)
 
