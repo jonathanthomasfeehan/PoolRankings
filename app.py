@@ -11,13 +11,11 @@ import datetime
 from flask_wtf import CSRFProtect
 from werkzeug.middleware.proxy_fix import ProxyFix
 import json
+import urllib
 
 
 
 # def get_app_secret():
-
-print ("\n\n\nWORKING\n\n\n")
-
 
 #constants
 STARTING_RATING = 500
@@ -34,12 +32,25 @@ csrf = CSRFProtect(app)
 
 # ------------------
 #connect to database
-# db = pymongo.mongo_client('mongodb://localhost:27017/')
+# client = pymongo.MongoClient('mongodb://localhost:27017/')
+user =  urllib.parse.quote_plus(os.getenv('MONGO_USER'))
+password =  urllib.parse.quote_plus(os.getenv('MONGO_PASSWORD'))
 
+print('mongodb://%s:%s@localhost:27017' % (os.getenv('MONGO_USER'), os.getenv('MONGO_PASSWORD')))
+client = pymongo.MongoClient('mongodb://%s:%s@localhosdt:27017' % (user, password))
+DB_NAME = os.getenv('MONGO_DB')
+db = client.DB_NAME
 
 #checks to see if database exists
 # if(db.get_collection("RECORDS")is not None):
 #     RECORDS = db.get_collection('RECORDS')
+#     print("found collection")
+# else:
+#     print("No RECORDS collection found. Check database settings")
+#     exit()
+
+# if(db.get_collection("MATCHES")is not None):
+#     MATCHES = db.get_collection('MATCHES')
 #     print("found collection")
 # else:
 #     print("No RECORDS collection found. Check database settings")
@@ -50,9 +61,10 @@ csrf = CSRFProtect(app)
 
 #assigns database collection to local variable
 
-# RECORDS = db.RECORDS
-# MATCHES = db.MATCHES
+RECORDS = db.RECORDS
+MATCHES = db.MATCHES
 
+print(RECORDS)
 
 
 
