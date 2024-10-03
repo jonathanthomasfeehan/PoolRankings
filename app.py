@@ -36,12 +36,11 @@ csrf = CSRFProtect(app)
 user =  urllib.parse.quote_plus(os.getenv('MONGO_USER'))
 password =  urllib.parse.quote_plus(os.getenv('MONGO_PASSWORD'))
 
-print('mongodb://%s:%s@localhost:27017' % (os.getenv('MONGO_USER'), os.getenv('MONGO_PASSWORD')))
-client = pymongo.MongoClient('mongodb://%s:%s@localhosdt:27017' % (user, password))
-DB_NAME = os.getenv('MONGO_DB')
-db = client.DB_NAME
+print('mongodb://%s:%s@database:27017' % (user, password))
+client = pymongo.MongoClient('mongodb://%s:%s@database:27017/PoolRankings' % (user, password))
+db = client[os.getenv('MONGO_DB')]
 
-#checks to see if database exists
+# checks to see if database exists
 # if(db.get_collection("RECORDS")is not None):
 #     RECORDS = db.get_collection('RECORDS')
 #     print("found collection")
@@ -60,12 +59,13 @@ db = client.DB_NAME
 
 
 #assigns database collection to local variable
-
+print(db)
+print(type(db))
 RECORDS = db.RECORDS
 MATCHES = db.MATCHES
 
 print(RECORDS)
-
+print(type(RECORDS))
 
 
 @app.route('/')
