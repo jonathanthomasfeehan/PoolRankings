@@ -34,11 +34,25 @@ services:
       - ./static:/src/static
     networks:
       - dbconnection
+      - app-network
     env_file:
       - .env
+  
+  nginx:
+    image: nginx:latest
+    container_name: nginx-proxy
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - flask_app
+    networks:
+      - app-network
   
 
 networks:
   dbconnection:
     driver: bridge
-  
+  app-network:
+    driver: bridge
