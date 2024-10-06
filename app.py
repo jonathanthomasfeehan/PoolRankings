@@ -26,7 +26,8 @@ D = 400
 app = Flask(__name__)
 # app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 # app.config['SERVER_NAME']='localhost'
-app.config['SECRET_KEY'] = os.urandom(32)
+# app.config['SECRET_KEY'] = os.urandom(32)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 csrf = CSRFProtect(app)
 # app.register_blueprint(auth.bp)
 
@@ -36,7 +37,6 @@ csrf = CSRFProtect(app)
 user =  urllib.parse.quote_plus(os.getenv('MONGO_USER'))
 password =  urllib.parse.quote_plus(os.getenv('MONGO_PASSWORD'))
 
-print('mongodb://%s:%s@database:27017' % (user, password))
 client = pymongo.MongoClient('mongodb://%s:%s@database:27017/PoolRankings' % (user, password))
 db = client[os.getenv('MONGO_DB')]
 
@@ -59,13 +59,10 @@ db = client[os.getenv('MONGO_DB')]
 
 
 #assigns database collection to local variable
-print(db)
-print(type(db))
+
 RECORDS = db.RECORDS
 MATCHES = db.MATCHES
 
-print(RECORDS)
-print(type(RECORDS))
 
 
 @app.route('/')
