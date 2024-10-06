@@ -1,6 +1,7 @@
 
 from pydoc import render_doc
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, Blueprint
+from flask_login import login_required, current_user, LoginManager
 import pymongo
 import pymongo.mongo_client
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -12,6 +13,8 @@ from flask_wtf import CSRFProtect
 from werkzeug.middleware.proxy_fix import ProxyFix
 import json
 import urllib
+from User import User
+from auth import auth as auth_blueprint
 
 
 
@@ -24,12 +27,18 @@ D = 400
 
 
 app = Flask(__name__)
+
+main_blueprint = Blueprint('main', __name__)
+
 # app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 # app.config['SERVER_NAME']='localhost'
 # app.config['SECRET_KEY'] = os.urandom(32)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 csrf = CSRFProtect(app)
 # app.register_blueprint(auth.bp)
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login_page'
+login_manager.init_app(app)
 
 # ------------------
 #connect to database
@@ -62,8 +71,12 @@ db = client[os.getenv('MONGO_DB')]
 
 RECORDS = db.RECORDS
 MATCHES = db.MATCHES
+app.register_blueprint(auth_blueprint)
+app.register_blueprint(main_blueprint)
 
-
+@login_manager.user_loader
+def load_user(user_id):
+        return User.get(user_id)
 
 @app.route('/')
 def index():
@@ -129,32 +142,7 @@ def report_match():
     #return successful code
     return 'done' , 200
 
-@app.route('/addNewPlayer', methods = ["POST"])
-def addNewPlayer():
-    #processes request to get data
-    data = request.form
 
-    #saves name that needs to be added
-    playerFirstName = data['PlayerFirstName']
-    playerLastName = data['PlayerLastName']
-    playerUsername = data['PlayerUsername']
-    password = data['Password']
-    password_confirmation = data['Password_confirmation']
-
-    if(password != password_confirmation):
-        return 'false', 406
-    
-    # checks to see if name exists in database already
-    try:
-        db.validate_collection('Users')
-        if RECORDS.count_documents({'Username':playerUsername}, limit=1):
-                return 'false', 470  
-    except pymongo.errors.OperationFailure:
-        #creates new record if one does not alreadt exist, stores only the password hash
-        result = RECORDS.insert_one({"FirstName": playerFirstName, "LastName": playerLastName, "Username":playerUsername, "Password": generate_password_hash(password),  "Rating": STARTING_RATING, "Matches": 0 })    
-        if result:
-            return 'done', 201
-    return 'false', 500
 
 @app.route('/showRankings')
 def displayRankings():
@@ -182,6 +170,11 @@ def getUsernames():
     data = jsonify(result)
     return data, 200
 
+
+@app.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html', name = current_user.name)
 
 
 app.config['TEMPLATES_AUTO_RELOAD'] = True
