@@ -4,11 +4,8 @@ import pymongo
 import pymongo.mongo_client
 import os
 from bson.objectid import ObjectId
+import database
 
-
-
-client = pymongo.MongoClient('mongodb://%s:%s@database:27017/PoolRankings' % (os.getenv('MONGO_USER'), os.getenv('MONGO_PASSWORD')))
-db = client[os.getenv('MONGO_DB')]
 
 class User(UserMixin):
     def __init__(self, user_data):
@@ -20,14 +17,15 @@ class User(UserMixin):
 
     @staticmethod
     def find_by_username(username):
-        user_data = db.RECORDS.find_one({'Username': username})
+        user_data = database.RECORDS.find_one({'Username': username})
         if user_data:
             return User(user_data)
         return None
 
     @staticmethod
     def find_by_id(user_id):
-        user_data = db.users.find_one({'_id': ObjectId(user_id)})
+        user_data = database.RECORDS.find_one({'_id': ObjectId(user_id)})
+        print(f'In find_by_user, userdata = {user_data}')
         if user_data:
             return User(user_data)
         return None
@@ -43,4 +41,5 @@ class User(UserMixin):
 
     @staticmethod
     def get(id:str):
+        print(f'In user, id is {id}')
         return User.find_by_id(id)

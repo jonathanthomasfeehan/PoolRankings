@@ -39,18 +39,21 @@
         let username = document.getElementById('Username').value
         let password = document.getElementById('Password').value
         let csrf = document.getElementById("csrf").value
+        let next = window.location.search.split('next=')[1]
 
         // sends post request, if successful then alerts client
         // 
         $.ajax({
             url:'/login',
             type:'POST',
-            data:{'username':username, 'password':password, "csrf_token":csrf },
-            success:function(){
-                // alert(playerToAdd + " added to database")
+            data:{'username':username, 'password':password, "csrf_token":csrf, "next":next },
+            success:function(response){
                 document.getElementById("Password").value = "";
-                window.location.replace("/profile");
-
+                console.log("SUCCESS, redirecting")
+                // TODO: Remove script redirect if this doesnt work
+                // window.location.replace("/profile");
+                console.log(response)
+                window.location.replace(response.redirect_url)
 
             },
             error:function(jqXHR, exception){

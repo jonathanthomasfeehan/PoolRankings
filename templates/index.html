@@ -68,9 +68,10 @@
                 </form>
             </div>
             <div>
-                <form action = '/profile'>
-                    <button type = 'submit' name = 'profile' class="index_nav_buttons" id="profile">Profile</button>
-                </form>
+                <!-- <form action = "{{  url_for('profile')  }}"> -->
+                    <!-- <button type = 'submit' name = 'profile' class="index_nav_buttons" id="profile">Profile</button> -->
+                <!-- </form> -->
+                <a href="{{ url_for('profile') }}" class="index_nav_buttons" id="profile">Profile</a>
             </div>
 
         </div>

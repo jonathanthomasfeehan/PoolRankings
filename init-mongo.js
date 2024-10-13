@@ -9,5 +9,5 @@ db.getSiblingDB(process.env.MONGO_DB).createUser({
     roles:["readWrite"]
 })
 
-// db.createCollection(process.env.MONGO_DB)
-// db.getSiblingDB(process.env.MONGO_DB).createCollection(process.env.MONGO_COLLECTION);
+db.createCollection(process.env.MONGO_DB)
+db.getSiblingDB(process.env.MONGO_DB).createCollection(process.env.MONGO_COLLECTION);

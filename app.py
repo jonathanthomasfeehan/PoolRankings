@@ -15,15 +15,16 @@ import json
 import urllib
 from User import User
 from auth import auth as auth_blueprint
+import database
+from flask_cors import CORS
+
 
 
 
 # def get_app_secret():
 
 #constants
-STARTING_RATING = 500
-K = 32
-D = 400
+#Moved to database
 
 
 app = Flask(__name__)
@@ -34,54 +35,36 @@ main_blueprint = Blueprint('main', __name__)
 # app.config['SERVER_NAME']='localhost'
 # app.config['SECRET_KEY'] = os.urandom(32)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+
+# TODO: Fix for prod
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SECURE'] = False 
+
 csrf = CSRFProtect(app)
+CORS(app)
 # app.register_blueprint(auth.bp)
 login_manager = LoginManager()
-login_manager.login_view = 'auth.login_page'
+login_manager.login_view = 'auth.login'
 login_manager.init_app(app)
 
-# ------------------
-#connect to database
-# client = pymongo.MongoClient('mongodb://localhost:27017/')
-user =  urllib.parse.quote_plus(os.getenv('MONGO_USER'))
-password =  urllib.parse.quote_plus(os.getenv('MONGO_PASSWORD'))
 
-client = pymongo.MongoClient('mongodb://%s:%s@database:27017/PoolRankings' % (user, password))
-db = client[os.getenv('MONGO_DB')]
-
-# checks to see if database exists
-# if(db.get_collection("RECORDS")is not None):
-#     RECORDS = db.get_collection('RECORDS')
-#     print("found collection")
-# else:
-#     print("No RECORDS collection found. Check database settings")
-#     exit()
-
-# if(db.get_collection("MATCHES")is not None):
-#     MATCHES = db.get_collection('MATCHES')
-#     print("found collection")
-# else:
-#     print("No RECORDS collection found. Check database settings")
-#     exit()
-
-
-
-
-#assigns database collection to local variable
-
-RECORDS = db.RECORDS
-MATCHES = db.MATCHES
+RECORDS = database.RECORDS
+MATCHES = database.MATCHES
 app.register_blueprint(auth_blueprint)
 app.register_blueprint(main_blueprint)
 
 @login_manager.user_loader
 def load_user(user_id):
+        print("Loading user")
+        print(user_id)
+        print(User.get(user_id))
         return User.get(user_id)
 
 @app.route('/')
 def index():
     #TODO: fix function name
     #render homepage
+    print(current_user.is_authenticated)
     return render_template("index.html")
 
 @app.route('/ReportMatch')
@@ -92,7 +75,7 @@ def reportMatch_page():
 
 def calculate_expected(player1, player2):
     #calculate expected win rate using elo formula
-    return (1/(1+(10**( (RECORDS.find_one({'Username':player2})['Rating'] - RECORDS.find_one({'Username':player1})['Rating'])/D))))
+    return (1/(1+(10**( (RECORDS.find_one({'Username':player2})['Rating'] - RECORDS.find_one({'Username':player1})['Rating'])/database.D))))
 
 
 ### start of function to add player matches
@@ -131,8 +114,8 @@ def report_match():
     player1_old_score = RECORDS.find_one({"Username":player1})['Rating']
     player2_old_score = RECORDS.find_one({"Username":player2})['Rating']
 
-    player1_new_score = player1_old_score + K*(result[0]-player1_expected)
-    player2_new_score = player2_old_score + K*(result[1]-player2_expected)
+    player1_new_score = player1_old_score + database.K*(result[0]-player1_expected)
+    player2_new_score = player2_old_score + database.K*(result[1]-player2_expected)
 
     MATCHES.insert_one({"Player1":player1,"Player2":player2,"Player1_previous_score":player1_old_score,"Player2_previous_score":player2_old_score,"Player1_new_score":player1_new_score,"Player2_new_score":player2_new_score,"Date":datetime.datetime.now()})
     #update database with new ratings

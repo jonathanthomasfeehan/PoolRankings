@@ -33,6 +33,7 @@ RUN adduser \
 
 # For testing purposes
 RUN apt-get update && apt-get install -y iputils-ping
+RUN apt-get update && apt-get install -y build-essential libffi-dev
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
