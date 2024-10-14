@@ -55,17 +55,13 @@ app.register_blueprint(main_blueprint)
 
 @login_manager.user_loader
 def load_user(user_id):
-        print("Loading user")
-        print(user_id)
-        print(User.get(user_id))
         return User.get(user_id)
 
 @app.route('/')
 def index():
     #TODO: fix function name
     #render homepage
-    print(current_user.is_authenticated)
-    return render_template("index.html")
+    return render_template("index.html", isloggedin = current_user.is_active)
 
 @app.route('/ReportMatch')
 def reportMatch_page():

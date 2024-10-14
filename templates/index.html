@@ -22,6 +22,17 @@
     </nav> -->
     <!-- <div class = "background background_img"> -->
         <!-- <h1>Welcome to the Washington University Billiards Club</h1> -->
+        <div>
+            <!-- <form action = "{{  url_for('profile')  }}"> -->
+                <!-- <button type = 'submit' name = 'profile' class="index_nav_buttons" id="profile">Profile</button> -->
+            <!-- </form> -->
+            {% if isloggedin %}
+            <a href="{{ url_for('auth.logout') }}" class="index_nav_buttons" id="profile">Logout</a>
+            <a href="{{ url_for('profile') }}" class="index_nav_buttons" id="profile">Profile</a>
+            {% else %}
+            <a href="{{ url_for('auth.login') }}" class="index_nav_buttons" id="profile">Login</a>
+            {% endif %}
+        </div>
         <div class="float_container">
             <div id="title">
                 <p>
@@ -62,17 +73,13 @@
                     </div>
                 </div>
             </div>
-            <div>
-                <form action = '/login_page'>
-                    <button type = 'submit' name = 'login' class="index_nav_buttons" id="login_button">Login</button>
-                </form>
-            </div>
-            <div>
-                <!-- <form action = "{{  url_for('profile')  }}"> -->
+
+            <!-- <div>
+                 <form action = "{{  url_for('profile')  }}"> -->
                     <!-- <button type = 'submit' name = 'profile' class="index_nav_buttons" id="profile">Profile</button> -->
-                <!-- </form> -->
+                <!-- </form>
                 <a href="{{ url_for('profile') }}" class="index_nav_buttons" id="profile">Profile</a>
-            </div>
+            </div> -->
 
         </div>
    
