@@ -18,3 +18,47 @@
     </div>
 </body>
 
+<script>
+    window.onload = getMatchData;
+
+    function getMatchData(){
+
+        console.log("{{csrf_token()}}")
+        // let username = document.getElementById('Username').value
+        // let password = document.getElementById('Password').value
+        // let csrf = document.getElementById("csrf").value
+        // let next = window.location.search.split('next=')[1]
+
+        // sends post request, if successful then alerts client
+        // 
+
+        $.ajax({
+            url:'/getUserMatchHistory',
+            type:'POST',
+            data: {"csrf_token":"{{csrf_token()}}"},
+            success:function(response){
+                // document.getElementById("matches_list").value = response.games;
+                console.log(response)
+                
+
+            },
+            error:function(jqXHR, exception){
+                console.log(jqXHR)
+                if(jqXHR.status==450) {
+                    alert("The database could not handle this request at this time. Please try again later")
+                }
+               
+
+                else{
+                    alert("Unexpected server error")
+
+
+                }
+            }
+
+        })
+    }
+
+
+
+</script>

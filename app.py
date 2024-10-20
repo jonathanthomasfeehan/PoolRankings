@@ -155,6 +155,14 @@ def getUsernames():
 def profile():
     return render_template('profile.html', name = current_user.name)
 
+@app.route('/getUserMatchHistory', methods = ["POST"])
+@login_required
+def getUserMatchHistory():
+    print("IN function")
+    results = list(MATCHES.find({"$or" : [{"Player1" : current_user.username},{"Player2": current_user.username}]}, {"_id":0  }))
+    print(results)
+    return jsonify(results)
+
 
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Disable caching of static files
