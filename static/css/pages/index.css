@@ -89,7 +89,7 @@
 
 @media only screen and (min-width: 768px) {
     body{
-        background-image: url("./../src/index_background_wide_1080.jpg");
+        background-image: url("./../../src/index_background_wide_1080.jpg");
         background-repeat: no-repeat;
         background-size: cover
     }
@@ -106,7 +106,7 @@
 
 @media only screen and (min-width: 900) {
     body{
-        background-image: url("./../src/index_background_wide_1080.jpg");
+        background-image: url("./../../src/index_background_wide_1080.jpg");
         background-repeat: no-repeat;
         background-size: cover;
     }
@@ -127,7 +127,7 @@
 
 @media only screen and (min-width: 1000) {
     body{
-        background-image: url("./../src/index_background_wide_1080.jpg");
+        background-image: url("./../../src/index_background_wide_1080.jpg");
         background-repeat: no-repeat;
         background-size: cover;
     }
@@ -151,7 +151,7 @@
 
 @media only screen and (min-width: 2000px) {
     body{
-        background-image: url("./../src/index_background_wide_1080.jpg");
+        background-image: url("./../../src/index_background_wide_1080.jpg");
         background-repeat: no-repeat;
         background-size: cover;
     }

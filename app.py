@@ -159,7 +159,9 @@ def profile():
 @login_required
 def getUserMatchHistory():
     print("IN function")
-    results = list(MATCHES.find({"$or" : [{"Player1" : current_user.username},{"Player2": current_user.username}]}, {"_id":0  }))
+    results = {'matches' : list(MATCHES.find({"$or" : [{"Player1" : current_user.username},{"Player2": current_user.username}]}, {"_id":0  }))}
+    # TODO: Add which user made request to JSON, pull Player names of opponents, insert requester username into specific slot in matches list
+    results['requester'] = current_user.username
     print(results)
     return jsonify(results)
 
