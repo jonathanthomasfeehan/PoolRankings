@@ -50,6 +50,7 @@ login_manager.init_app(app)
 
 RECORDS = database.RECORDS
 MATCHES = database.MATCHES
+PENDING_MATCHES =  database.PENDING_MATCHES
 app.register_blueprint(auth_blueprint)
 app.register_blueprint(main_blueprint)
 
@@ -67,6 +68,11 @@ def index():
 def reportMatch_page():
     #render match reporting page
     return render_template('reportMatch.html')
+
+@app.route('/ProposeMatch')
+def proposeMatch_page():
+    #render match reporting page
+    return render_template('ProposeMatch.html')
 
 
 def calculate_expected(player1, player2):
@@ -164,6 +170,16 @@ def getUserMatchHistory():
     results['requester'] = current_user.username
     print(results)
     return jsonify(results)
+
+@app.route('/proposeMatchRequest', methods = ["POST"])
+@login_required
+def proposeMatchRequest():
+    print("IN proposeMatchRequest function")
+    data=request.values
+    db_result = PENDING_MATCHES.insert_one({"Player1":current_user.username,"Player2":data['Player2'],"Date_Proposed":datetime.datetime.now(), "Date_Expired":datetime.datetime.now() + datetime.timedelta(days=3)})
+    print(db_result)
+    return 'done' , 200
+
 
 
 app.config['TEMPLATES_AUTO_RELOAD'] = True
