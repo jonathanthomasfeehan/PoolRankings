@@ -174,10 +174,8 @@ def getUserMatchHistory():
 @app.route('/proposeMatchRequest', methods = ["POST"])
 @login_required
 def proposeMatchRequest():
-    print("IN proposeMatchRequest function")
     data=request.values
-    db_result = PENDING_MATCHES.insert_one({"Player1":current_user.username,"Player2":data['Player2'],"Date_Proposed":datetime.datetime.now(), "Date_Expired":datetime.datetime.now() + datetime.timedelta(days=3)})
-    print(db_result)
+    PENDING_MATCHES.insert_one({"Player1":current_user.username,"Player2":data['PlayerUsername2'],"Date_Proposed":datetime.datetime.now(), "Date_Expired":datetime.datetime.now() + datetime.timedelta(days=3)})
     return 'done' , 200
 
 

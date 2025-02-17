@@ -27,7 +27,6 @@
     </div>
 
         <form>
-            <label for = "secondPlayer" id = "secondPlayerLabel">Player 2 </label>
             <input type="hidden" name="csrf_token" id="csrf_token" value="{{csrf_token()}}" />
 
         </form>
@@ -66,8 +65,6 @@
 
     // TODO: add authentication to match reporting to minimize exploits
 
-
-    // FIXME: Make sure valid usernames are selected
 
     function sendData(){
         // let player1 = document.getElementById('PlayerName1').value
