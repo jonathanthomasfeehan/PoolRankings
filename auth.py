@@ -89,3 +89,17 @@ def addNewPlayer():
 @auth.route('/login_page')
 def login_page():
     return render_template('login_page.html')
+
+@auth.route('/changePassword', methods = ["POST"])
+@login_required
+def changePassword():
+    data=request.values
+    if not (check_password_hash(current_user.password, data['OldPassword'])):
+        return 'Passwords do not match' , 470
+    RECORDS.update_one({'Username':data['Username']}, {'$set' : {'Password':generate_password_hash(data['NewPassword'])}})
+    return 'Password Updated' , 204
+
+
+@auth.route('/passwordReset')
+def passwordReset():
+    return render_template('passwordReset.html')

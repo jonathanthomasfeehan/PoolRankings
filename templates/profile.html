@@ -37,11 +37,23 @@
             </tbody>
         </table>
 
+        <!-- TODO: Update button -->
         <div>
             <form action = '/'>
                 <button type = 'submit' name = 'home' class="index_nav_buttons">Home</button>
             </form>
         </div>
+        <div></div>
+            <form action = "{{ url_for('auth.passwordReset') }}">
+                <button type = 'submit' name = 'passwordReset' class="index_nav_buttons">Update Password</button>
+            </form>
+        </div>
+        <div> </div>
+        <!-- <div>
+        <a href="{{ url_for('auth.changePassword') }}" class="index_nav_buttons" id="profile">Update Password</a>
+
+        </div> -->
+
     </div>
 </body>
 
