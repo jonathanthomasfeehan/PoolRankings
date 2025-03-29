@@ -18,6 +18,7 @@ auth = Blueprint('auth', __name__)
 # MATCHES = db.MATCHES
 RECORDS = database.RECORDS
 MATCHES = database.MATCHES
+PENDING_MATCHES =  database.PENDING_MATCHES
 
 @auth.route('/login', methods=['POST', 'GET'])
 def login():

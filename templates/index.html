@@ -29,6 +29,7 @@
             {% if isloggedin %}
             <a href="{{ url_for('auth.logout') }}" class="index_nav_buttons" id="profile">Logout</a>
             <a href="{{ url_for('profile') }}" class="index_nav_buttons" id="profile">Profile</a>
+            <a href="{{ url_for('pendingMatches') }}" class="index_nav_buttons" id="profile">Pending Matches</a>
             {% else %}
             <a href="{{ url_for('auth.login') }}" class="index_nav_buttons" id="profile">Login</a>
             {% endif %}
@@ -48,14 +49,13 @@
                 <div>
                     <div id="column_container">
                         <div class="upper">
+                            {% if isloggedin %}
                             <div class="index_buttons">
-                                <form action = '/ReportMatch'>
-                                    <button type = 'submit' name = 'reportMatch' class="index_nav_buttons">Report a match</button>
+                                <form action = '/ProposeMatch'>
+                                    <button type = 'submit' name = 'ProposeMatch' class="index_nav_buttons">Propose a Match</button>
                                 </form>
                             </div>
-                            <div>
-
-                            </div>
+                            {% endif %}
                             <div class="index_buttons">
                                 <form action = '/showRankings'>
                                     <button type = 'submit' class="index_nav_buttons">See Rankings</button>
