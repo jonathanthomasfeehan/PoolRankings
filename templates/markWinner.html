@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Match Reporting</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/pages/profile.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+
+
+</head>
+<body>
+
+    
+    <div>
+        <h1>
+            Who Won?
+        </h1>
+    </div>
+    <div class="container_fluid">
+        <div class="index_buttons">
+            <button onclick="sendWinner(1)">
+                {{name}}
+            </button>
+        </div>
+        <div class="index_buttons">
+            <button onclick="sendWinner(0)">
+                Opponent
+            </button>
+        </div>
+
+        <div>
+            <form action = '/'>
+                <button type = 'submit' name = 'home' class="index_nav_buttons">Home</button>
+            </form>
+        </div>
+    </div>
+
+    <input type="hidden" id="match_id" name="match_id" value="{{match_id}}">
+    <input type="hidden" id="user" name="user" value="{{username}}">
+    <!-- TODO: Update value -->
+    <input type="hidden" id="opponent" name="opponent" value="{{opponent}}">
+
+    
+</body>
+
+<script>
+
+    function sendWinner(result){
+
+
+        // sends post request, if successful then alerts client
+        if (result) {
+            winner=$("#user").val();
+        }else {
+            winner=$("#opponent").val();
+        }
+        console.log(winner)
+        // Ensure on server side that request comes from player involved in the match
+        // User has capability to mark winner for any match they are apart of anyways so no 
+        // security flaw if they update match id changed to another one of their matches
+        let matchid = $("#match_id").val();
+        $.ajax({
+            url:'/sendWinner',
+            type:'POST',
+            data: {"csrf_token":"{{csrf_token()}}", "match_id":matchid, "Winner":winner},
+            success:function(response){
+                window.location.replace("/");
+            },
+            error:function(jqXHR, exception){
+                console.log(jqXHR)
+                if(jqXHR.status==403) {
+                    alert("The current user does not match the players in the game. Please log in and try again later")
+                }
+                if(jqXHR.status==450) {
+                    alert("The winner is disputed. The match will not be counted.")
+                    window.location.replace("/");
+
+                }
+                if(jqXHR.status==503) {
+                    alert("The database could not handle this request at this time. Please try again later")
+                }
+
+            }
+
+        })
+    }
+
+
+
+</script>

@@ -25,7 +25,6 @@ class User(UserMixin):
     @staticmethod
     def find_by_id(user_id):
         user_data = database.RECORDS.find_one({'_id': ObjectId(user_id)})
-        print(f'In find_by_user, userdata = {user_data}')
         if user_data:
             return User(user_data)
         return None
@@ -41,5 +40,4 @@ class User(UserMixin):
 
     @staticmethod
     def get(id:str):
-        print(f'In user, id is {id}')
         return User.find_by_id(id)

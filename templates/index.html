@@ -29,6 +29,7 @@
             {% if isloggedin %}
             <a href="{{ url_for('auth.logout') }}" class="index_nav_buttons" id="profile">Logout</a>
             <a href="{{ url_for('profile') }}" class="index_nav_buttons" id="profile">Profile</a>
+            <a href="{{ url_for('pendingMatches') }}" class="index_nav_buttons" id="profile">Pending Matches</a>
             {% else %}
             <a href="{{ url_for('auth.login') }}" class="index_nav_buttons" id="profile">Login</a>
             {% endif %}
