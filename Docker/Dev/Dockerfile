@@ -41,28 +41,37 @@ RUN apt-get update && apt-get install -y build-essential libffi-dev
 # Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
 # Leverage a bind mount to requirements.txt to avoid having to copy them into
 # into this layer.
-RUN --mount=type=cache,target=/root/.cache/pip \
-    --mount=type=bind,source=requirements.txt,target=requirements.txt \
-    python -m pip install -r requirements.txt
+# RUN --mount=type=cache,target=/root/.cache/pip \
+#     --mount=type=bind,source=../../requirements.txt,target=requirements.txt \
+#     python -m pip install -r requirements.txt
+
+# Can optionally include dev specific dependencies in the requirements.txt file.
+# RUN --mount=type=bind,source=../../requirements.txt,target=requirements.txt \
+#     python -m pip install -r requirements.txt
+
+COPY ./requirements.txt requirements.txt
+
+RUN python -m pip install -r requirements.txt
 
 # Switch to the non-privileged user to run the application.
 USER appuser
 
 # Copy the source code into the container.
-COPY . .
+COPY ../../. .
 
 # Expose the port that the application listens on.
 EXPOSE 5000
 
 # Set flask env variable
-ENV FLASK_ENV=Production
+ENV FLASK_ENV=Development
 
-RUN pip install gunicorn
+# Not needed for development
+# RUN pip install gunicorn
 
 
 # Run the application.
 # Change to ./app.py when deploying
 
-# TODO: SET UP GUNICORN ENTRYPOINT
-# CMD python /src/app.py
-CMD ["gunicorn" , "-w" , "4", "-b", "0.0.0.0:5000" , "app:app"]
+
+CMD python app.py
+# CMD ["gunicorn" , "-w" , "4", "-b", "0.0.0.0:5000" , "app:app"]

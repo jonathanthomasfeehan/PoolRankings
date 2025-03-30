@@ -8,11 +8,13 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
+
+# Need to update service based on cloud environment
   database:
     image: mongo:6
     volumes:
-      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
-      - ./data:/data/db
+      - ../../init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+      - ../../data:/data/db
     ports: 
       - '27017:27017'
     networks:
@@ -29,30 +31,15 @@ services:
     depends_on:
       - database
     volumes:
-      - .:/src
-      - ./templates:/src/templates
-      - ./static:/src/static
+      - ../../.:/app
+      - ../../templates:/src/templates
+      - ../../static:/src/static
     networks:
       - dbconnection
-      - app-network
     env_file:
       - .env
-  
-  nginx:
-    image: nginx:latest
-    container_name: nginx-proxy
-    ports:
-      - 80:80
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-    depends_on:
-      - flask_app
-    networks:
-      - app-network
   
 
 networks:
   dbconnection:
-    driver: bridge
-  app-network:
     driver: bridge

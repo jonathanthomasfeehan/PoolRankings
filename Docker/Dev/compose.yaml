@@ -1,0 +1,44 @@
+# Comments are provided throughout this file to help you get started.
+# If you need more help, visit the Docker compose reference guide at
+# https://docs.docker.com/go/compose-spec-reference/
+
+# Here the instructions define your application as a service called "server".
+# This service is built from the Dockerfile in the current directory.
+# You can add other services your application may depend on here, such as a
+# database or a cache. For examples, see the Awesome Compose repository:
+# https://github.com/docker/awesome-compose
+services:
+  database:
+    image: mongo:6
+    volumes:
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+      - ../../data:/data/db
+    ports: 
+      - '27017:27017'
+    networks:
+      - dbconnection
+    env_file:
+      - .env
+      - .env-mongo
+
+  flask_app:
+    build:
+      context: .
+    ports:
+      - 5000:5000
+    depends_on:
+      - database
+    volumes:
+      - ../../.:/app
+      - ../../src/templates:/templates
+      - ../../src/static:/static
+    networks:
+      - dbconnection
+    env_file:
+      - .env
+  
+  
+
+networks:
+  dbconnection:
+    driver: bridge

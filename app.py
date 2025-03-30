@@ -6,33 +6,21 @@ import pymongo
 import pymongo.mongo_client
 from werkzeug.security import generate_password_hash, check_password_hash
 # TODO clean up excess imports
-import auth
 import os
 import datetime
 from flask_wtf import CSRFProtect
 from werkzeug.middleware.proxy_fix import ProxyFix
 import json
-import urllib
-from User import User
-from auth import auth as auth_blueprint
-import database
+from modules.User import User
+from modules.auth import auth as auth_blueprint
+import modules.database as database
 from flask_cors import CORS
 from bson.objectid import ObjectId
 
 
-# def get_app_secret():
-
-#constants
-#Moved to database
-
-
-app = Flask(__name__)
+app = Flask(__name__, template_folder='./src/templates', static_folder='./src/static')
 
 main_blueprint = Blueprint('main', __name__)
-
-# app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
-# app.config['SERVER_NAME']='localhost'
-# app.config['SECRET_KEY'] = os.urandom(32)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 # TODO: Fix for prod
@@ -287,6 +275,9 @@ def decreaseTrust(username : str):
 
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # Disable caching of static files
+
+
+
 
 #use for local development
 if __name__=='__main__':

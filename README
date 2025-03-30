@@ -1,0 +1,39 @@
+# Pool Rankings
+
+Pool Rankings is a project designed to calculate and manage player rankings for pool games. It provides tools to track player performance, calculate Elo ratings, and generate leaderboards.
+
+## Purpose
+
+The purpose of this project was to gain more experience coding and learning new technologies. Over the course of development I have gained experience working with containerized applications both for local and cloud deployment, I have pushed myself to explore better practices and naming conventions and most recently I have learned to take advantage of tools such as copilot to be more efficent in my time. As this project goes on I will continue learning as many lessons from the experience as I can. 
+
+## Features
+
+- Player performance tracking
+- Elo rating calculations
+- Leaderboard generation
+- Easy-to-use interface
+
+## Installation
+
+1. Clone the repository:
+    ```
+    git clone https://github.com/Feehanjt/PoolRankings.git
+    ```
+2. Navigate to the project directory:
+    ```
+    cd PoolRankings
+    ```
+3. Install docker (if applicable).
+
+## Usage
+
+### Local version
+
+To run a local dev version of the website follow the instructions below
+
+1. Run ./run.sh dev
+2. Navigate to http://localhost:5000/
+
+### Online version
+
+This feature is not yet available

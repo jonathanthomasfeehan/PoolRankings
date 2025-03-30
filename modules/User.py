@@ -4,7 +4,7 @@ import pymongo
 import pymongo.mongo_client
 import os
 from bson.objectid import ObjectId
-import database
+import modules.database as database
 
 
 class User(UserMixin):
