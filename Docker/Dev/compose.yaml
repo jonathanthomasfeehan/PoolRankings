@@ -8,37 +8,17 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  database:
-    image: mongo:6
-    volumes:
-      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
-      - ../../data:/data/db
-    ports: 
-      - '27017:27017'
-    networks:
-      - dbconnection
-    env_file:
-      - .env
-      - .env-mongo
 
   flask_app:
     build:
       context: .
     ports:
       - 5000:5000
-    depends_on:
-      - database
     volumes:
       - ../../.:/app
       - ../../src/templates:/templates
       - ../../src/static:/static
-    networks:
-      - dbconnection
     env_file:
       - .env
   
   
-
-networks:
-  dbconnection:
-    driver: bridge

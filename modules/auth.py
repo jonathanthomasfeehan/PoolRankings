@@ -11,14 +11,6 @@ import modules.database as database
 
 auth = Blueprint('auth', __name__)
 
-# client = pymongo.MongoClient('mongodb://%s:%s@database:27017/PoolRankings' % (os.getenv('MONGO_USER'), os.getenv('MONGO_PASSWORD')))
-# db = client[os.getenv('MONGO_DB')]
-
-# RECORDS = db.RECORDS
-# MATCHES = db.MATCHES
-RECORDS = database.RECORDS
-MATCHES = database.MATCHES
-PENDING_MATCHES =  database.PENDING_MATCHES
 
 @auth.route('/login', methods=['POST', 'GET'])
 def login():
@@ -34,14 +26,9 @@ def login():
             login_user(user)
             print(f'User is active: {current_user.is_active}')
             print(f'user name is {current_user.name}')
-            # next = 'profile'
-            # return("logged in" , 201)
-            # return redirect('/profile')
-            # return render_template('profile.html')
             next_page = request.args.get('next')
             print(f'Next page is: {next_page}')  # Debug the next parameter
 
-            # Redirect to 'next' or default to the profile page
             print(url_for('profile'))
             print(jsonify({'redirect_url': next_page or url_for('profile')}))
             return jsonify({'redirect_url': next_page or url_for('profile')}), 200
@@ -75,17 +62,20 @@ def addNewPlayer():
         return 'false', 406
     
     # checks to see if name exists in database already
-    # FIXME:
-    try:
-        database.db.validate_collection('Users')
-        if RECORDS.count_documents({'Username':playerUsername}, limit=1):
-                return 'false', 470  
-    except pymongo.errors.OperationFailure:
+    if database.database_get(database.USERS, playerUsername):
+        return 'false', 470
         #creates new record if one does not alreadt exist, stores only the password hash
-        result = RECORDS.insert_one({"FirstName": playerFirstName, "LastName": playerLastName, "Username":playerUsername, "Password": generate_password_hash(password),  "Rating": database.STARTING_RATING, "Matches": 0 })    
-        if result:
-            return 'done', 201
-    return 'false', 500
+    result = database.database_create(database.USERS,  
+        {"FirstName": playerFirstName, 
+        "LastName": playerLastName, 
+        "Username":playerUsername, 
+        "Password": generate_password_hash(password),  
+        "Rating": database.STARTING_RATING, 
+        "Matches": 0, 
+        "DisputedMatches": 0 })
+
+    # TODO: create verification for record creation
+    return 'done', 201
 
 @auth.route('/login_page')
 def login_page():
@@ -97,7 +87,7 @@ def changePassword():
     data=request.values
     if not (check_password_hash(current_user.password, data['OldPassword'])):
         return 'Passwords do not match' , 470
-    RECORDS.update_one({'Username':data['Username']}, {'$set' : {'Password':generate_password_hash(data['NewPassword'])}})
+    database.database_update(database.USERS, current_user.id, {'Password':generate_password_hash(data['NewPassword'])})
     return 'Password Updated' , 204
 
 

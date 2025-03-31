@@ -73,6 +73,7 @@
             type:'POST',
             data: {"csrf_token":"{{csrf_token()}}"},
             success:function(response){
+                console.log(response)
                 for(var i = response.matches.length-1; i>=0; i--){
                     let Player1 = response.matches[i].Player1
                     let Player2 = response.matches[i].Player2
