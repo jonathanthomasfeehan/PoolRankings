@@ -1,12 +1,10 @@
-import urllib
-import pymongo
-import pymongo.mongo_client
 import os
 import datetime
 import logging
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
+import google.cloud.firestore_v1 as firestore_v1
 from google.cloud.firestore_v1 import Increment
 
 
@@ -39,9 +37,12 @@ def database_update(collection, doc_id, data):
     Updates a document in the specified Firestore collection.
     """
     try:
-        collection.document(doc_id).set(data, merge=True)
+        print(f"Updating document {doc_id} in collection {collection.id} with data: {str(data)}")
+        result = collection.document(doc_id).set(data, merge=True)
+        return True
     except Exception as e:
         print(f"Error updating document {doc_id} in collection {collection.id}: {e}")
+        return False
 
 def database_update_with_query(collection, filters, data):
     """
@@ -50,7 +51,7 @@ def database_update_with_query(collection, filters, data):
     try:
         query = collection
         for field, operator, value in filters:
-            query = query.where(field, operator, value)
+            query = query.where(filter = firestore_v1.FieldFilter(field, operator, value))
         
         docs = query.stream()
         for doc in docs:
@@ -93,7 +94,7 @@ def database_query(collection, filters, fields=None):
         query = collection
         for field, operator, value in filters:
             print(f"Querying field: {field}, operator: {operator}, value: {value}")
-            query = query.where(field, operator, value)
+            query = query.where(filter = firestore_v1.FieldFilter(field, operator, value))
         # If fields is provided, select only those fields
         # Otherwise, select all fields by default
         if fields:
@@ -116,12 +117,11 @@ def database_query_one(collection, filters):
     try:
         query = collection
         for field, operator, value in filters:
-            query = query.where(field, operator, value)
+            query = query.where(filter=firestore_v1.FieldFilter(field, operator, value))
         result = query.stream()
         if not result:
             print(f"No documents found in collection {collection.id} with filters: {filters}")
             return None
-        # TODO: include check for no results
         return next(result).to_dict()
     except Exception as e:
         print(f"Error querying one document in collection {collection.id}: {e}")
@@ -155,7 +155,11 @@ def update_user_rating(user_id, new_rating):
     """
     Updates the rating of a user.
     """
-    database_update(USERS, user_id, {"Rating": new_rating})
+    if database_update(USERS, user_id, {"Rating": new_rating}):
+        return True
+    else:
+        print(f"Failed to update rating for user {user_id}")
+        return False
 
 def get_pending_matches(username):
     """
@@ -173,11 +177,17 @@ def update_player_rankings(player1_username, player2_username, player1_new_ratin
     # Should this be passed in as a list of tuples instead?
 
     # Get the document IDs for the players
-    player1_docid = get_user_by_username(player1_username)
-    player2_docid = get_user_by_username(player2_username)
+    player1_docid = get_user_by_username(player1_username)['id']
+    player2_docid = get_user_by_username(player2_username)['id']
     # Update the ratings in the database
-    update_user_rating(player1_docid, player1_new_rating)
-    update_user_rating(player2_docid, player2_new_rating)
+    # TODO: Look into doing both of these as a transaction
+    if not update_user_rating(player1_docid, player1_new_rating):
+        return False
+    if not update_user_rating(player2_docid, player2_new_rating):
+        return False
+    database_increment(USERS, player1_docid, "Matches", 1)
+    database_increment(USERS, player2_docid, "Matches", 1)
+    return True
 
 # Elo scaling constants
 STARTING_RATING = 500

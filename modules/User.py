@@ -1,9 +1,4 @@
 from flask_login import UserMixin
-from pymongo import MongoClient
-import pymongo
-import pymongo.mongo_client
-import os
-from bson.objectid import ObjectId
 import modules.database as database
 
 

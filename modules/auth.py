@@ -1,10 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-import pymongo
-import pymongo.mongo_client
 from modules.User import User
-import os
 import modules.database as database
 
 
@@ -21,6 +18,7 @@ def login():
         password = request.form.get('password')
         next = request.form.get('next')
         user = User.find_by_username(username)
+        print(f'User details: {user}')
         if user and check_password_hash(user.password, password):
             print(f'User is active: {current_user.is_active}')
             login_user(user)

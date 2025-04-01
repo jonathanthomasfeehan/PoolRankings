@@ -2,18 +2,14 @@
 from pydoc import render_doc
 from flask import Flask, jsonify, render_template, request, Blueprint
 from flask_login import login_required, current_user, LoginManager
-from werkzeug.security import generate_password_hash, check_password_hash
 # TODO: clean up excess imports
 import os
 import datetime
 from flask_wtf import CSRFProtect
-from werkzeug.middleware.proxy_fix import ProxyFix
-import json
 from modules.User import User
 from modules.auth import auth as auth_blueprint
 import modules.database as database
 from flask_cors import CORS
-from bson.objectid import ObjectId
 
 
 app = Flask(__name__, template_folder='./src/templates', static_folder='./src/static')
@@ -83,7 +79,11 @@ def report_match(player1: str, player2: str, winner:str) -> bool:
 
 
     player1_old_score = database.database_query_one(database.USERS, [('Username','==', player1)])
+    print(f'Player 1 old score: {player1_old_score}')
+    player1_old_score = player1_old_score['Rating']
     player2_old_score = database.database_query_one(database.USERS, [('Username','==', player2)])
+    print(f'Player 1 old score: {player2_old_score}')
+    player2_old_score = player2_old_score['Rating']
     if player1_old_score == None or player2_old_score == None:
         return False
 
@@ -120,6 +120,7 @@ def displayRankings():
 
 @app.route('/getRankings' , methods = ['POST'])
 def getRankings():
+    # TODO: Return ratings in order
     data = database.database_query(database.USERS, filters=[], fields= ['Rating', 'FirstName', 'LastName'])
     data = jsonify(data)
     return data, 200
@@ -207,6 +208,9 @@ def acceptProposedMatch():
     match_id = data['match_id']
     DB_result = database.database_update(database.PENDING_MATCHES, match_id, {'Status':1})
     # Check if update is successful
+    print(f'Update result: {DB_result}')
+    if DB_result == None:
+        return 'Error updating match', 500
     return 'done' , 200
 
 @app.route('/rejectProposedMatch', methods = ["POST"])

@@ -168,7 +168,7 @@
                 for(var i = response.matches.length-1; i>=0; i--){
                     let player1 = response.matches[i].Player1
                     let player2 = response.matches[i].Player2
-                    let match_id = response.matches[i]._id
+                    let match_id = response.matches[i].id
                     let matchDate = response.matches[i].Date_Proposed
                     let matchStatus =  response.matches[i].Status
                     let curr_user = $("#username").val();
