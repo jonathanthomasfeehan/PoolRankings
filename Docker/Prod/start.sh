@@ -1,5 +1,4 @@
 #!/bin/sh
-set -euo pipefail
 
 echo "Fixing permissions for secrets..."
 
