@@ -65,7 +65,8 @@ def addNewPlayer():
         "Password": generate_password_hash(password),  
         "Rating": database.STARTING_RATING, 
         "Matches": 0, 
-        "DisputedMatches": 0 })
+        "DisputedMatches": 0,
+        "DisplayUsername":"true" })
     if result == None:
         return 'false', 470
     
