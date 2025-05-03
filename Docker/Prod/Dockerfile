@@ -50,11 +50,18 @@ COPY requirements.txt requirements.txt
 RUN python -m pip install -r requirements.txt
 
 
+
+
 # Switch to the non-privileged user to run the application.
-USER appuser
+# This is getting moved to the entrypoint script so that seccret files can be updated
+# and the app can be run as a non-privileged user.
+# USER appuser
 
 # Copy the source code into the container.
 COPY ../../. .
+
+RUN chmod +x /app/Docker/Prod/Start.sh
+
 
 # Expose the port that the application listens on.
 EXPOSE 5000
@@ -68,7 +75,9 @@ ENV FLASK_ENV=Production
 RUN pip install gunicorn
 
 
+
+
 # Run the application.
 
-CMD ["gunicorn" , "-w" , "4", "-b", "0.0.0.0:5000" , "app:app"]
+CMD ["/app/Docker/Prod/start.sh"]
 
