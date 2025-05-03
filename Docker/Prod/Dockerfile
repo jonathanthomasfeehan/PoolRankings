@@ -22,20 +22,21 @@ WORKDIR /app
 
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
-ARG UID=10001
-RUN adduser \
-    --disabled-password \
-    --gecos "" \
-    --home "/nonexistent" \
-    --shell "/sbin/nologin" \
-    --no-create-home \
-    --uid "${UID}" \
-    appuser
+
+# The cloud service provider that I am using (Render) seems to not allow secrets to be accessed
+# by non-privileged users. So I am going to run the app as root for now.
+
+# ARG UID=10001
+# RUN adduser \
+#     --disabled-password \
+#     --gecos "" \
+#     --home "/nonexistent" \
+#     --shell "/sbin/nologin" \
+#     --no-create-home \
+#     --uid "${UID}" \
+#     appuser
 
 
-# For testing purposes
-# RUN apt-get update && apt-get install -y iputils-ping
-# RUN apt-get update && apt-get install -y build-essential libffi-dev
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
@@ -60,8 +61,6 @@ RUN python -m pip install -r requirements.txt
 # Copy the source code into the container.
 COPY ../../. .
 
-RUN chmod +x /app/Docker/Prod/start.sh
-
 
 # Expose the port that the application listens on.
 EXPOSE 5000
@@ -79,5 +78,6 @@ RUN pip install gunicorn
 
 # Run the application.
 
-CMD ["/app/Docker/Prod/start.sh"]
+# CMD ["/app/Docker/Prod/start.sh"] Used for running a shell script to start the app.
+CMD ["gunicorn" , "-w" , "4", "-b", "0.0.0.0:5000" , "app:app"]
 
