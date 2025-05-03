@@ -16,19 +16,13 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        next = request.form.get('next')
         user = User.find_by_username(username)
-        print(f'User details: {user}')
         if user and check_password_hash(user.password, password):
-            print(f'User is active: {current_user.is_active}')
             login_user(user)
             print(f'User is active: {current_user.is_active}')
             print(f'user name is {current_user.name}')
             next_page = request.args.get('next')
-            print(f'Next page is: {next_page}')  # Debug the next parameter
-
-            print(url_for('profile'))
-            print(jsonify({'redirect_url': next_page or url_for('profile')}))
+            # Not really used as nav buttons leading to locked pages arent present if not logged in
             return jsonify({'redirect_url': next_page or url_for('profile')}), 200
 
         else:
@@ -60,7 +54,8 @@ def addNewPlayer():
         return 'false', 406
     
     # checks to see if name exists in database already
-    if database.database_get(database.USERS, playerUsername):
+    # Need to get USER document ids to check if they exist
+    if database.get_user_by_username(playerUsername):
         return 'false', 470
         #creates new record if one does not alreadt exist, stores only the password hash
     result = database.database_create(database.USERS,  
@@ -71,9 +66,11 @@ def addNewPlayer():
         "Rating": database.STARTING_RATING, 
         "Matches": 0, 
         "DisputedMatches": 0 })
-
-    # TODO: create verification for record creation
-    return 'done', 201
+    if result == None:
+        return 'false', 470
+    
+    login_data = {'username': playerUsername, 'password': password}
+    return login_data, 201
 
 @auth.route('/login_page')
 def login_page():

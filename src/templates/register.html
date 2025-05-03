@@ -36,6 +36,11 @@
                 Register User
             </button>
         </div>
+        <div>
+            <form action = '/'>
+                <button type = 'submit' name = 'home' class="index_nav_buttons">Home</button>
+            </form>
+        </div>
         <input type="hidden", id="csrf", name="csrf"  value="{{csrf_token()}}">
     </div>
 
@@ -62,20 +67,20 @@
             url:'/addNewPlayer',
             type:'POST',
             data:{'PlayerFirstName':playerFirstName, 'PlayerLastName':playerLastName, 'PlayerUsername':playerUsername, 'Password': playerPassword, 'Password_confirmation' : playerPasswordConfirmation,"csrf_token":csrf },
-            success:function(){
+            success:function(data){
                 // alert(playerToAdd + " added to database")
+                login_user(data)
                 document.getElementById("PlayerFirstName").value = "";
                 document.getElementById("PlayerLastName").value = "";
                 document.getElementById("Password").value = "";
                 document.getElementById("Password_confirmation").value = "";
-                window.location.replace("/");
 
 
             },
             error:function(jqXHR, exception){
                 console.log(jqXHR)
                 if(jqXHR.status==470) {
-                    alert("Player already in database")
+                    alert("Username already exists. Please try again")
                     document.getElementById("PlayerFirstName").value = "";
                     document.getElementById("PlayerLastName").value = "";
                     document.getElementById("Password").value = "";
@@ -83,7 +88,7 @@
 
 
                 }
-                if(jqXHR.status==406) {
+                else if(jqXHR.status==406) {
                     alert("Passwords do not match")
                     document.getElementById("PlayerFirstName").value = "";
                     document.getElementById("PlayerLastName").value = "";
@@ -106,6 +111,44 @@
         })
     }
 
+
+    function login_user(data) {
+        console.log(data)
+        let username = data.username
+        let password = data.password
+        let csrf = document.getElementById("csrf").value
+
+        $.ajax({
+            url:'/login',
+            type:'POST',
+            data:{'username':username, 'password':password, "csrf_token":csrf, "next":'/' },
+            success:function(response){
+                document.getElementById("Password").value = "";
+                console.log("SUCCESS, redirecting")
+                // window.location.replace("/profile");
+                console.log(response)
+                window.location.replace(response.redirect_url)
+
+            },
+            error:function(jqXHR, exception){
+                console.log(jqXHR)
+                if(jqXHR.status==470) {
+                    alert("Login credentials incorrect. Please try again")
+                    document.getElementById("Password").value = "";
+
+                }
+               
+
+                else{
+                    alert("Could not login, please try again")
+                    document.getElementById("Password").value = "";
+
+
+                }
+            }
+
+        })
+    }
 
 
 </script>

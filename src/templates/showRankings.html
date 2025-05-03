@@ -4,11 +4,16 @@
     <meta charset="UTF-8">
     <title>Pool Rankings</title>
     <link rel="stylesheet" href="{{ url_for('static', filename= 'css/pages/showRankings.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 
 </head>
 <body>
+    <!-- TODO: Include home icon navigation because list is not currently limited -->
+    <!-- TODO: Implement bootstrap table for consistency -->
+    <!-- Consider adding toggleable linegraph of top 10 players overtime for comparison + user(?). Chart.js or D3.js as options -->
     <div id="navigation_bar"></div>
     <h1>Rankings</h1>
     <div id="list">

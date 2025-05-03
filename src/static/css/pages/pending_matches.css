@@ -1,0 +1,78 @@
+body {
+    background-color: rgb(31, 87, 23);
+}
+
+.invert_icon{
+    filter: invert(1);
+}
+
+#home_nav{
+    scale: 0.9;
+}
+
+.custom-container{
+    display: flex; /* Use Flexbox to align items side by side */
+    align-items: center; /* Vertically center the items */
+    justify-content:flex-start; /* Horizontally center the container */
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#logo_container{
+    flex: 0 0 auto; /* Flex-grow, flex-shrink, and flex-basis */
+    margin-left: 2%;
+}
+
+#custom-title{
+    flex: 1;
+    text-align: center;
+    width: 100%;
+
+}
+
+#custom-title > h1{
+    color: white;
+    border: none;
+
+}
+
+#title{
+    color: white;
+    border: none;
+}
+
+h3 {
+    color: white;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.custom-container > h1{
+    color: white;
+    text-align: center;
+    border: none;
+} 
+
+
+
+.header-1{
+    width: 15% ;
+}
+
+.header-2{
+    width: 15%;
+}
+
+.header-3{
+    width: 15%;
+}
+
+.header-4{
+    width: 25%;
+}
+
+.header-5{
+    width: 30%;
+}

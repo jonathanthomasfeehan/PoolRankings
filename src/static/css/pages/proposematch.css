@@ -1,0 +1,53 @@
+body{
+    color: white;
+}
+
+.flex_container{
+    align-items: center;
+    justify-content:center ; /* Horizontally center the container */
+}
+
+.flex_item{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.opponent_searchbox{
+    margin-top: 20px;
+    width: 50%;
+    height: 50px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: rgb(17, 51, 13);
+    color: white;
+    font-size: 16px;
+    align-items: center;
+}
+
+#proposeMatchInstruction{
+    color: white;
+    text-align: center;
+    margin-top: 100px;
+    margin-bottom: 20px;
+}
+
+.hidden{
+    display: none;
+}
+
+#toast{
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #eeb6b6;
+    color: #f71818;
+    padding: 16px;
+    border-radius: 5px;
+    z-index: 9999;
+    opacity: 0.9;
+    font-size: x-large;
+    /* transition: opacity 2s ease-in-out; */
+}

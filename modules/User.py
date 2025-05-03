@@ -8,6 +8,7 @@ class User(UserMixin):
         self.username = user_data['Username']
         self.password = user_data['Password']  # Hashed password
         self.name =   '%s %s' % (user_data['FirstName'] , user_data['LastName']) #user_data.get('name', 'Default')
+        self.displayUsername = user_data['DisplayUsername'] #user_data.get('display_username', 'Default')
         self.active = True   #Active status (default True)
 
     @staticmethod

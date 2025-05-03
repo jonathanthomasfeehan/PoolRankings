@@ -9,42 +9,28 @@
 
 </head>
 <body>
-    <!-- <nav>
-        <ul>
-            {% if g.user %}
-                <li><span>{{ g.user['username'] }}</span>
-                <li><a href="./">Log Out</a>
-            {% else %}
-                <li><a href="/register">Register</a>
-                <li><a href="./">Log In</a>
-            {% endif %}
-        </ul>
-    </nav> -->
-    <!-- <div class = "background background_img"> -->
-        <!-- <h1>Welcome to the Washington University Billiards Club</h1> -->
-        <div>
-            <!-- <form action = "{{  url_for('profile')  }}"> -->
-                <!-- <button type = 'submit' name = 'profile' class="index_nav_buttons" id="profile">Profile</button> -->
-            <!-- </form> -->
+    
+        <div class="nav_bar">
+           
             {% if isloggedin %}
             <a href="{{ url_for('auth.logout') }}" class="index_nav_buttons" id="profile">Logout</a>
             <a href="{{ url_for('profile') }}" class="index_nav_buttons" id="profile">Profile</a>
             <a href="{{ url_for('pendingMatches') }}" class="index_nav_buttons" id="profile">Pending Matches</a>
             {% else %}
-            <a href="{{ url_for('auth.login') }}" class="index_nav_buttons" id="profile">Login</a>
+            <!-- <a href="{{ url_for('auth.login') }}" class="index_nav_buttons" id="profile">Login</a> -->
             {% endif %}
         </div>
         <div class="float_container">
             <div id="title">
                 <p>
-                    Washington
+                    Rack It Up
                 </p>
-                <p>
+                <!-- <p>
                     University
                 </p>
                 <p>
                     Billiards Club
-                </p>
+                </p> -->
 
                 <div>
                     <div id="column_container">
@@ -53,6 +39,12 @@
                             <div class="index_buttons">
                                 <form action = '/ProposeMatch'>
                                     <button type = 'submit' name = 'ProposeMatch' class="index_nav_buttons">Propose a Match</button>
+                                </form>
+                            </div>
+                            {% else %}
+                            <div class="index_buttons">
+                                <form action = '/login'>
+                                    <button type = 'submit' name = 'login' class="index_nav_buttons" id="login_button">Login</button>
                                 </form>
                             </div>
                             {% endif %}
@@ -65,9 +57,12 @@
                            
                         </div>
                         <div class="lower">
+                            {% if not isloggedin %}
+
                             <form action = '/register'>
                                 <button type = 'submit' name = 'register' class="index_nav_buttons" id="register_button">Register</button>
                             </form>
+                            {% endif %}
                         </div>
                         
                     </div>
@@ -87,7 +82,6 @@
     
             
 
-        <!-- TODO: -->
         <!-- implement actual navigation -->
         <div>
            

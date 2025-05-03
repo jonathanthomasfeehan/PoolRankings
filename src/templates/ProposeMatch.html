@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Pool Rankings</title>
     <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/pages/matchReporting.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/pages/proposematch.css') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 </head>
@@ -12,13 +12,11 @@
     <div class = "background background_img">
         <h1>Propose Match</h1>
         <div class="flex_container">
-            <!-- <div class="flex_item">
-                <label for = "PlayerName1">Enter first player name</label>
-                <input type = "search" name = "PlayerName1" id = "PlayerName1" list="username_list" onchange="document.getElementById('firstPlayerLabel').innerHTML = document.getElementById('PlayerName1').value; document.getElementById('firstPlayer').value=document.getElementById('PlayerName1').value"> 
-            </div> -->
+            <div>
+                <h2 id="proposeMatchInstruction"> Enter second player name</h2>
+            </div>
             <div class="flex_item">
-                <label for ="PlayerName2"> Enter second player name</label>
-                <input type = "search" name = "PlayerName2" id = "PlayerName2" list="username_list" onchange="document.getElementById('secondPlayerLabel').innerHTML = document.getElementById('PlayerName2').value; document.getElementById('secondPlayer').value=document.getElementById('PlayerName2').value">    
+                <input class="opponent_searchbox" type = "search" name = "PlayerName2" id = "PlayerName2" list="username_list" >    
             </div>
            
         </div>
@@ -33,9 +31,18 @@
 
 
     <div>
-        <button onclick = 'sendData()', id="reportMatchFormButton" >
+        <button onclick = 'sendData()', id="reportMatchFormButton" class="index_nav_buttons">
             Submit
         </button>
+    </div>
+    <div>
+        <form action = '/'> 
+            <button type = 'submit' name = 'home' class="index_nav_buttons">Home</button>
+        </form>
+    </div>
+
+    <div id="toast" class="fixed bottom-4 right-4 bg-red-600 text-white p-3 rounded shadow hidden">
+        Match proposal failed.
     </div>
     
     <datalist id="username_list">
@@ -45,7 +52,6 @@
 
 </body>
 <script>
-    // TODO: Include verify user check to ensure opponent is in the system
     window.onload = function getUsernames(){
     // function getUsernames(){
         $.ajax({
@@ -63,36 +69,27 @@
         })
     }
 
-    // TODO: add authentication to match reporting to minimize exploits
 
 
     function sendData(){
-        // let player1 = document.getElementById('PlayerName1').value
         let player2 = document.getElementById('PlayerName2').value
         let csrf = document.getElementById("csrf_token").value
-        // let winner = null
-        // let winners = document.getElementsByName('winner')
+        // TODO: Move to server side
 
-        // TODO: review logic
-        // for (let i =0; i<winners.length; i++) {
-        //     if (winners[i].checked) {
-        //         winner = winners[i].value
-        //     }
-        // }
-        // if(winner ==null) {
-        //     alert("Please select a winner")
-        //     return
-        // }
-
-        // sends post request, if successful then returns client to home page
         $.ajax({
 
             statusCode:{
                 200: function(){
                     window.location.replace("/");
                 },
-                400: function(){
-                    alert("Could not propose match")
+                403:function(){
+                        $('#toast').text("The player was not found")
+                },
+                422: function(){
+                    $('#toast').text("The opponent cannot be the same as you")
+                },
+                423: function(){
+                    $('#toast').text("You already have a match proposed with this player")
                 },
                 500: function(){
                     alert("The server is unable to process this request right now.")
@@ -103,8 +100,20 @@
 
             url:'/proposeMatchRequest',
             type:'POST',
-            data:{'PlayerUsername2':player2, "csrf_token":csrf}
-            
+            data:{'PlayerUsername2':player2, "csrf_token":csrf},
+            error: function (jqXHR, textStatus, errorThrown) {
+                if(jqXHR.status >= 400 && jqXHR.status < 500){
+                    $('#toast').fadeIn().delay(6000).fadeOut()
+                    console.log(jqXHR.status)
+                    console.log(textStatus)
+                    console.log(errorThrown)
+                }else if (jqXHR.status >= 500 && jqXHR.status < 600){
+                    alert("The server is unable to process this request right now.")
+                    console.log(jqXHR.status)
+                    console.log(textStatus)
+                    console.log(errorThrown)
+                }
+            }
         })
     }
 </script>

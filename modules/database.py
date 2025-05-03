@@ -31,13 +31,13 @@ def database_create(collection, data):
         print(f"Error creating document in collection {collection.id}: {e}")
         print(f"Data: {data}")
         print(f"Document ID: {doc_ref.id}")
+        return None
 
 def database_update(collection, doc_id, data):
     """
     Updates a document in the specified Firestore collection.
     """
     try:
-        print(f"Updating document {doc_id} in collection {collection.id} with data: {str(data)}")
         result = collection.document(doc_id).set(data, merge=True)
         return True
     except Exception as e:
@@ -118,11 +118,12 @@ def database_query_one(collection, filters):
         query = collection
         for field, operator, value in filters:
             query = query.where(filter=firestore_v1.FieldFilter(field, operator, value))
-        result = query.stream()
+        # result = query.stream()
+        result = query.get()
         if not result:
-            print(f"No documents found in collection {collection.id} with filters: {filters}")
             return None
-        return next(result).to_dict()
+        return (result)[0].to_dict()
+        # return next(result).to_dict()
     except Exception as e:
         print(f"Error querying one document in collection {collection.id}: {e}")
         return None
@@ -148,7 +149,6 @@ def get_user_by_username(username, fields = None):
     if results:
         return results[0]
     else:
-        print(f"No user found with username: {username}")
         return None
 
 def update_user_rating(user_id, new_rating):

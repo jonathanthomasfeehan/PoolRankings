@@ -15,11 +15,27 @@
 <body>
 
     
-    <div>
-        <h1>
+    <div class="custom-container">
+        <img src="{{ url_for('static', filename= 'src/home.png') }}" alt="Home" id="home_nav" class="invert_icon" onclick="window.location.href='/'">
+
+        <h1 id="title">
             Hello {{name}}
         </h1>
+
+        <div class="custom_tooltip">
+            <span class="switch-label">Username Mode</span>
+            <span class="custom_tooltiptext">Enabling will display username in all locations instead of actual name on account</span>
+        </div>
+
+        <label class="switch" >
+            
+            <input type="checkbox" id="toggleSwitch">
+            <span class="slider"></span>
+        </label>
+
+
     </div>
+        
     <div class="container_fluid">
         <table class="table">
             <thead>
@@ -35,38 +51,57 @@
             </tbody>
         </table>
 
-        <!-- TODO: Update button -->
         <div>
+            <form action = "{{ url_for('auth.passwordReset') }}">
+                <button type = 'submit' name = 'passwordReset' class="index_nav_buttons">Update Password</button>
+            </form>
+         </div>
+         <!-- TODO: delete account option -->
+         <div>
+            <form action = '/deleteAccount'>
+                <button type = 'submit' name = 'home' class="index_nav_buttons">Delete Account</button>
+            </form>
+        </div>
+         <div>
             <form action = '/'>
                 <button type = 'submit' name = 'home' class="index_nav_buttons">Home</button>
             </form>
         </div>
-        <div></div>
-            <form action = "{{ url_for('auth.passwordReset') }}">
-                <button type = 'submit' name = 'passwordReset' class="index_nav_buttons">Update Password</button>
-            </form>
-        </div>
+        
         <div> </div>
         <!-- <div>
         <a href="{{ url_for('auth.changePassword') }}" class="index_nav_buttons" id="profile">Update Password</a>
 
         </div> -->
 
+        <input type="hidden" name="username" id="username" value="{{username}}" />
+        <input type="hidden" name="displayUsername" id="displayUsername" value="{{displayUsername}}" />
+        <input type="hidden" name="name" id="name" value="{{name}}" />
+
     </div>
 </body>
 
 <script>
-    window.onload = getMatchData;
+    window.onload = function() {
+        var toggleSwitch = document.getElementById("toggleSwitch");
+        if (document.getElementById('displayUsername').value=='true'){
+            document.getElementById("toggleSwitch").checked = true;
+            document.getElementById("title").innerText = "Hello " + document.getElementById("username").value
+        }
+        else {
+            document.getElementById("toggleSwitch").checked = false;
+        }
+        toggleSwitch.addEventListener("change", function() {
+            if (this.checked) {
+                turnOnUsernameMode();
+            } else {
+                turnOffUsernameMode();
+            }
+        });
+        getMatchData();
+    };
 
     function getMatchData(){
-
-        // let username = document.getElementById('Username').value
-        // let password = document.getElementById('Password').value
-        // let csrf = document.getElementById("csrf").value
-        // let next = window.location.search.split('next=')[1]
-
-        // sends post request, if successful then alerts client
-        // 
 
         $.ajax({
             url:'/getUserMatchHistory',
@@ -131,6 +166,45 @@
         })
     }
 
+    function turnOnUsernameMode(){
+        let displayUsername = document.getElementById("displayUsername").value
+        $.ajax({
+            url:'/setDisplayUsername',
+            type:'POST',
+            data: {"csrf_token":"{{csrf_token()}}", "DisplayUsername":"true"},
+            success:function(response){
+                console.log(response)
+                console.log(document.getElementById("username").value)
 
+                document.getElementById("title").innerText = "Hello " + document.getElementById("username").value
+
+            },
+            error:function(jqXHR, exception){
+                console.log(jqXHR)
+                alert("The database could not handle this request at this time. Please try again later")
+            }
+
+        })
+    }
+    function turnOffUsernameMode(){
+        let username = document.getElementById("username").value
+        $.ajax({
+            url:'/setDisplayUsername',
+            type:'POST',
+            data: {"csrf_token":"{{csrf_token()}}", "DisplayUsername":"false"},
+            success:function(response){
+                console.log(response)
+                console.log(document.getElementById("name").value)
+                document.getElementById("title").innerText = "Hello " + document.getElementById("name").value
+
+            },
+            error:function(jqXHR, exception){
+                console.log(jqXHR)
+                alert("The database could not handle this request at this time. Please try again later")
+
+            }
+
+        })
+    }
 
 </script>

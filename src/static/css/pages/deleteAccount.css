@@ -1,0 +1,81 @@
+body {
+    background-color: rgb(31, 87, 23);
+}
+
+.invert_icon{
+    filter: invert(1);
+}
+
+#home_nav{
+    scale: 0.9;
+}
+
+.custom-container{
+    display: flex; /* Use Flexbox to align items side by side */
+    align-items: center; /* Vertically center the items */
+    justify-content:flex-start; /* Horizontally center the container */
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#logo_container{
+    flex: 0 0 auto; /* Flex-grow, flex-shrink, and flex-basis */
+    margin-left: 2%;
+}
+
+#custom-title{
+    flex: 1;
+    text-align: center;
+    width: 100%;
+
+}
+
+#custom-title > h1{
+    color: white;
+    border: none;
+
+}
+
+#title{
+    color: white;
+    border: none;
+}
+
+.deactivated{
+    background-color: #2b2b2b;
+}
+
+.activated{
+    /* width: 100%; */
+
+    background-color: #6b0b0b;
+
+    
+}
+
+p{
+    color: white;
+    text-align: center;
+}
+
+.deleteAccountText{
+    color: white;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 10px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.textBoxContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.deleteAccountText{
+    color: black;
+}

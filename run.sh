@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# filepath: d:\Projects\PoolElo\PoolRankings\run.sh
 
 # Check if an environment is provided
 if [ -z "$1" ]; then
