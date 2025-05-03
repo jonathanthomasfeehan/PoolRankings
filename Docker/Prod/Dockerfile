@@ -60,7 +60,7 @@ RUN python -m pip install -r requirements.txt
 # Copy the source code into the container.
 COPY ../../. .
 
-RUN chmod +x /app/Docker/Prod/Start.sh
+RUN chmod +x /app/Docker/Prod/start.sh
 
 
 # Expose the port that the application listens on.
