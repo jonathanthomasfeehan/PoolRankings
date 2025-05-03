@@ -301,6 +301,13 @@ def sendWinner():
 def deleteAccountPage():
     return render_template('deleteAccount.html' )
 
+@app.route('/healthz' , methods = ["GET"]) 
+def healthz():
+    if database.database_query(database.USERS, filters=[], fields= ['Username']) == None:
+        return 'Database not connected', 500
+    return 'OK', 200
+
+
 
 @app.route('/deleteAccountRequest', methods = ['POST'])
 @login_required
