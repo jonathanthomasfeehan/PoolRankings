@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pool Rankings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/pages/showRankings.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+</head>
+<body>
+    <!-- TODO: Include home icon navigation because list is not currently limited -->
+    <!-- TODO: Implement bootstrap table for consistency -->
+    <!-- Consider adding toggleable linegraph of top 10 players overtime for comparison + user(?). Chart.js or D3.js as options -->
+    <div id="navigation_bar"></div>
+    <h1>Rankings</h1>
+    <div id="list">
+        {%for score in scores%}
+
+        <div class=list_row> 
+            <div class=align_left> 
+                <p>{{score.FirstName}} {{score.LastName}}</p>
+
+            </div>
+            <div class=align_right>  
+                <p>{{score.Rating | round(3)}}</p>
+            </div>
+        </div>
+        {%endfor%}
+
+    <div>
+        <form action = '/'>
+            <button type = 'submit' name = 'home' class="index_nav_buttons">Home</button>
+        </form>
+    </div>
+    
+
+
+</body>
+
+</html>

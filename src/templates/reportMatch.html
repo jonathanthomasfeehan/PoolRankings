@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pool Rankings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/pages/matchReporting.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+</head>
+<body>
+    <div class = "background background_img">
+        <h1>Match Reporting</h1>
+        <div class="flex_container">
+            <div class="flex_item">
+                <label for = "PlayerName1">Enter first player name</label>
+                <input type = "search" name = "PlayerName1" id = "PlayerName1" list="username_list" onchange="document.getElementById('firstPlayerLabel').innerHTML = document.getElementById('PlayerName1').value; document.getElementById('firstPlayer').value=document.getElementById('PlayerName1').value"> 
+            </div>
+            <div class="flex_item">
+                <label for ="PlayerName2"> Enter second player name</label>
+                <input type = "search" name = "PlayerName2" id = "PlayerName2" list="username_list" onchange="document.getElementById('secondPlayerLabel').innerHTML = document.getElementById('PlayerName2').value; document.getElementById('secondPlayer').value=document.getElementById('PlayerName2').value">    
+            </div>
+           
+        </div>
+        
+
+    </div>
+    <div>
+        <h3>Select a winner</h3>
+        <form>
+            <input type = "radio" name = "winner" id = "firstPlayer" value = "PlayerName1">
+            <label for = "firstPlayer" id="firstPlayerLabel">Player 1 </label>
+            <input type = "radio" name = "winner" id = "secondPlayer" value = "PlayerName2">
+            <label for = "secondPlayer" id = "secondPlayerLabel">Player 2 </label>
+            <input type="hidden" name="csrf_token" id="csrf_token" value="{{csrf_token()}}" />
+
+        </form>
+    
+    </div>
+
+    <div>
+        <button onclick = 'sendData()', id="reportMatchFormButton" >
+            Submit
+        </button>
+    </div>
+    
+    <datalist id="username_list">
+    </datalist>
+
+
+
+</body>
+<script>
+
+    window.onload = function getUsernames(){
+    // function getUsernames(){
+        $.ajax({
+            success:function(data){
+                console.log(data)
+                for (record in data){
+                    console.log(record)
+                    document.getElementById("username_list").innerHTML += ("<option value= " + data[record].Username + "> \n")
+                }
+            },
+            failure:function(){
+                alert("Trouble contacting server")
+            },
+            url:'/getUsernames'
+        })
+    }
+
+    // TODO: add authentication to match reporting to minimize exploits
+
+
+    // FIXME: Make sure valid usernames are selected
+
+    function sendData(){
+        let player1 = document.getElementById('PlayerName1').value
+        let player2 = document.getElementById('PlayerName2').value
+        let csrf = document.getElementById("csrf_token").value
+        let winner = null
+        let winners = document.getElementsByName('winner')
+
+        // TODO: review logic
+        for (let i =0; i<winners.length; i++) {
+            if (winners[i].checked) {
+                winner = winners[i].value
+            }
+        }
+        if(winner ==null) {
+            alert("Please select a winner")
+            return
+        }
+
+        // sends post request, if successful then returns client to home page
+        $.ajax({
+
+            statusCode:{
+                200: function(){
+                    window.location.replace("/");
+                },
+                400: function(){
+                    alert("The players were not found or the winner was not selected. Please try again.")
+                },
+                500: function(){
+                    alert("The server is unable to process this request right now.")
+                }
+
+            },
+
+
+            url:'/addMatchToDatabase',
+            type:'POST',
+            data:{'PlayerUsername1':player1, 'PlayerUsername2':player2, 'Winner':winner, "csrf_token":csrf}
+            
+        })
+    }
+</script>
+
+</html>

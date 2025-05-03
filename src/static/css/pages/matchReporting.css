@@ -1,0 +1,13 @@
+body{
+    color: white;
+}
+
+.flex_container{
+    display: flex;
+
+}
+
+.flex_item{
+    flex-direction: row;
+    width: 50%;
+}

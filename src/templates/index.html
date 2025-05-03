@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pool Rankings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/pages/index.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+</head>
+<body>
+    
+        <div class="nav_bar">
+           
+            {% if isloggedin %}
+            <a href="{{ url_for('auth.logout') }}" class="index_nav_buttons" id="profile">Logout</a>
+            <a href="{{ url_for('profile') }}" class="index_nav_buttons" id="profile">Profile</a>
+            <a href="{{ url_for('pendingMatches') }}" class="index_nav_buttons" id="profile">Pending Matches</a>
+            {% else %}
+            <!-- <a href="{{ url_for('auth.login') }}" class="index_nav_buttons" id="profile">Login</a> -->
+            {% endif %}
+        </div>
+        <div class="float_container">
+            <div id="title">
+                <p>
+                    Rack It Up
+                </p>
+                <!-- <p>
+                    University
+                </p>
+                <p>
+                    Billiards Club
+                </p> -->
+
+                <div>
+                    <div id="column_container">
+                        <div class="upper">
+                            {% if isloggedin %}
+                            <div class="index_buttons">
+                                <form action = '/ProposeMatch'>
+                                    <button type = 'submit' name = 'ProposeMatch' class="index_nav_buttons">Propose a Match</button>
+                                </form>
+                            </div>
+                            {% else %}
+                            <div class="index_buttons">
+                                <form action = '/login'>
+                                    <button type = 'submit' name = 'login' class="index_nav_buttons" id="login_button">Login</button>
+                                </form>
+                            </div>
+                            {% endif %}
+                            <div class="index_buttons">
+                                <form action = '/showRankings'>
+                                    <button type = 'submit' class="index_nav_buttons">See Rankings</button>
+                                </form>
+                            </div>
+                            
+                           
+                        </div>
+                        <div class="lower">
+                            {% if not isloggedin %}
+
+                            <form action = '/register'>
+                                <button type = 'submit' name = 'register' class="index_nav_buttons" id="register_button">Register</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+
+            <!-- <div>
+                 <form action = "{{  url_for('profile')  }}"> -->
+                    <!-- <button type = 'submit' name = 'profile' class="index_nav_buttons" id="profile">Profile</button> -->
+                <!-- </form>
+                <a href="{{ url_for('profile') }}" class="index_nav_buttons" id="profile">Profile</a>
+            </div> -->
+
+        </div>
+   
+
+    
+            
+
+        <!-- implement actual navigation -->
+        <div>
+           
+        </div>
+        
+        
+    <!-- </div> -->
+    
+</body>
+
+
+</html>

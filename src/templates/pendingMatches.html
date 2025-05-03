@@ -1,0 +1,280 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pool Rankings Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/pages/pending_matches.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+
+
+</head>
+<body>
+
+    
+    <div class="custom-container">
+        <img src="{{ url_for('static', filename= 'src/home.png') }}" alt="Home" id="home_nav" class="invert_icon" onclick="window.location.href='/'">
+
+        <h1>
+            Hello {{name}}
+        </h1>
+    </div>
+    
+    <div class="container_fluid">
+        <div>
+            <h3>
+                Proposed Matches
+            </h3>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="header-1">You</th>
+                    <th class="header-2">Opponent</th>
+                    <th class="header-3">Game</th>
+                    <th class="header-4">Accept/Decline</th>
+                    <th class="header-5">Date</th>
+                </tr>
+            </thead>
+            <tbody id="pending_matches">
+
+            </tbody>
+        </table>
+
+        <div>
+            <h3>
+                In Progress Matches
+            </h3>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="header-1">You</th>
+                    <th class="header-2">Opponent</th>
+                    <th class="header-3">Game</th>
+                    <th class="header-4">Score Match</th>
+                    <th class="header-5">Date</th>
+                </tr>
+            </thead>
+            <tbody id="accepted_matches">
+
+            </tbody>
+        </table>
+        <div>
+            <h3>
+                Rejected
+            </h3>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th class="header-1">You</th>
+                    <th class="header-2">Opponent</th>
+                    <th class="header-3">Game</th>
+                    <th class="header-4">Result</th>
+                    <th class="header-5">Date</th>
+                </tr>
+            </thead>
+            <tbody id="rejected_matches">
+
+            </tbody>
+        </table>
+
+
+        <div>
+            <form action = '/'>
+                <button type = 'submit' name = 'home' class="index_nav_buttons">Home</button>
+            </form>
+        </div>
+    </div>
+    <input type="hidden", name="username", id="username". value="{{username}}"/>
+</body>
+
+<script>
+    // Update to populate all tables
+    // Put into standalone function to support easy data refresh
+    window.onload = getProposedMatches;
+
+    function acceptMatch(match_id) {
+        $.ajax({
+            url:'/acceptProposedMatch',
+            type:'POST',
+            data: {"csrf_token":"{{csrf_token()}}", "match_id": match_id},
+            success:function(response){
+                // reload matches in tables
+                getProposedMatches()
+            },
+            error:function(jqXHR, exception){
+                console.log(jqXHR)
+                if(jqXHR.status==450) {
+                    alert("The database could not handle this request at this time. Please try again later")
+                }
+               
+
+                else{
+                    alert("Unexpected server error")
+
+
+                }
+            }
+
+        })
+    }
+
+    function rejectMatch(match_id) {
+        $.ajax({
+            url:'/rejectProposedMatch',
+            type:'POST',
+            data: {"csrf_token":"{{csrf_token()}}", "match_id": match_id},
+            success:function(response){
+                // reload matches in tables
+                getProposedMatches()
+
+            },
+            error:function(jqXHR, exception){
+                console.log(jqXHR)
+                if(jqXHR.status==450) {
+                    alert("The database could not handle this request at this time. Please try again later")
+                }
+               
+
+                else{
+                    alert("Unexpected server error")
+
+
+                }
+            }
+
+        })
+    }
+
+    // TODO: Update to redirect to new page
+    function MarkWinner(match_id) {
+        window.location.href = `/MarkWinnerPage?match_id=${match_id}`;
+
+    }
+
+    function getProposedMatches(){
+        // sends post request, if successful then alerts client
+
+        $.ajax({
+            url:'/getProposedMatches',
+            type:'POST',
+            data: {"csrf_token":"{{csrf_token()}}"},
+            success:function(response){
+                document.getElementById("pending_matches").innerHTML = ''
+                for(var i = response.matches.length-1; i>=0; i--){
+                    let player1 = response.matches[i].Player1
+                    let player2 = response.matches[i].Player2
+                    let match_id = response.matches[i].id
+                    let matchDate = response.matches[i].Date_Proposed
+                    let matchStatus =  response.matches[i].Status
+                    let curr_user = $("#username").val();
+                    let curr_user_is_propser = (curr_user==player1)
+                    if(curr_user_is_propser) {
+                        user=player1
+                        otherplayer = player2
+                    }else {
+                        user=player2
+                        otherplayer = player1
+                    }
+                    let winner_marked = `<td> Waiting on opponent to mark Winner </td>`
+                    let winner_unmarked = `<td> <button onclick='MarkWinner("${match_id}")' >Mark Winner</button> </td>`
+                    
+                    console.log(response)
+
+                    // Update to consider proposer of the match as well as match status
+
+                    // Match Status 0, propsoed, not accepted/rejected
+                    if (matchStatus==0) {
+                        let match_acceptance_text = `<td> <button class="accept" onclick='acceptMatch("${match_id}")' >Accept</button> <button class="reject" onclick ='rejectMatch("${match_id}")'>Reject</button> </td>`
+                        let proposer_text = `<td> Waiting for oppoenent to accept match </td>`
+                        document.getElementById("pending_matches").innerHTML += 
+                    
+                    `<tr > 
+                        <td> ${user}</td>
+                        <td> ${otherplayer}</td>
+                        <td> 8 Ball </td>
+                        ${curr_user_is_propser ? proposer_text : match_acceptance_text}
+                        <td> ${matchDate} </td>
+                        </tr>
+                        `
+                    }
+
+                    //Match Status 1, accepted, no one has marked winner
+                    if (matchStatus==1) {
+
+                        document.getElementById("accepted_matches").innerHTML += 
+
+                        `<tr > 
+                        <td> ${user}</td>
+                        <td> ${otherplayer}</td>
+                        <td> 8 Ball </td>
+                        <td> <button onclick='MarkWinner("${match_id}")' >Mark Winner</button> </td>
+                        <td> ${matchDate} </td>
+                        </tr>
+                        `
+                    }
+                    //Match Status 2, Rejected
+                    if (matchStatus==2) {
+                        document.getElementById("rejected_matches").innerHTML += 
+                        `<tr > 
+                        <td> ${user}</td>
+                        <td> ${otherplayer}</td>
+                        <td> 8 Ball </td>
+                        <td> Rejected </td>
+                        <td> ${matchDate} </td>
+                        </tr>
+                        `
+                    }
+                    // Match Statsus 3 Only Match Proposer aka player1 has marked winner
+                    if (matchStatus==3) {
+                        document.getElementById("accepted_matches").innerHTML += 
+                        `<tr > 
+                        <td> ${user}</td>
+                        <td> ${otherplayer}</td>
+                        <td> 8 Ball </td>
+                        ${curr_user_is_propser ? winner_marked : winner_unmarked}
+                        <td> ${matchDate} </td>
+                        </tr>
+                        `
+                    }
+                    // Match statsus 4 Only player2 has marked winner
+                    if (matchStatus==4) {
+                        document.getElementById("accepted_matches").innerHTML += 
+                        `<tr > 
+                        <td> ${user}</td>
+                        <td> ${otherplayer}</td>
+                        <td> 8 Ball </td>
+                        ${curr_user_is_propser ? winner_unmarked : winner_marked}
+                        <td> ${matchDate} </td>
+                        </tr>
+                        `
+                    }
+                }
+            },
+            error:function(jqXHR, exception){
+                console.log(jqXHR)
+                if(jqXHR.status==450) {
+                    alert("The database could not handle this request at this time. Please try again later")
+                }
+                
+
+                else{
+                    alert("Unexpected server error")
+
+
+                }
+            }
+
+        })
+    }
+
+
+
+</script>

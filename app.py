@@ -1,92 +1,60 @@
 
-from pydoc import render_doc
-from flask import Flask, jsonify, render_template, request
-import pymongo
-from werkzeug.security import generate_password_hash, check_password_hash
-# TODO clean up excess imports
-import auth
+from flask import Flask, jsonify, render_template, request, Blueprint
+from flask_login import login_required, current_user, LoginManager, logout_user
 import os
-
-#constants
-STARTING_RATING = 500
-K = 32
-D = 400
-
-
-app = Flask(__name__)
-# app.register_blueprint(auth.bp)
-
-#
-# Uncomment when pushing to main, required for live build
-#
-# if __name__=='__main__':
-#     app.run(debug=False, host='0.0.0.0')
-
-# TODO:
-# may need to write mongodb shell script to initialize database with docker compose
-
-#connect to database
- 
-mongo_host = "database"
-host_port = 27017
-mongo_db = os.environ.get("MONGO_DB")
-db_username = os.environ.get("MONGO_USER")
-db_pwd = os.environ.get("MONGO_PASSWORD")
-db_collection = os.environ.get("MONGO_COLLECTION")
+import datetime
+from flask_wtf import CSRFProtect
+from modules.User import User
+from modules.auth import auth as auth_blueprint
+import modules.database as database
+from flask_cors import CORS
 
 
-myclient = pymongo.MongoClient(f'mongodb://{db_username}:{db_pwd}@{mongo_host}:{host_port}/{mongo_db}?authSource={mongo_db}')
-# myclient = pymongo.MongoClient(username=db_username, password=db_pwd,)
-# myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-# print(myclient.database_names())
-#select correct collection
-db = myclient[mongo_db]
+app = Flask(__name__, template_folder='./src/templates', static_folder='./src/static')
 
-#checks to see if database exists
-# if(db.get_collection("Records")is not None):
-#     records = db.get_collection('Records')
-#     print("found collection")
-# else:
-#     print("No Records collection found. Check database settings")
-#     exit()
+main_blueprint = Blueprint('main', __name__)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SECURE'] = True 
+app.config['PREFERRED_URL_SCHEME']='https',
+csrf = CSRFProtect(app)
+CORS(app)
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
+login_manager.init_app(app)
+app.register_blueprint(auth_blueprint)
+app.register_blueprint(main_blueprint)
 
-#assigns database collection to local variable
-records = db.Records
-
+@login_manager.user_loader
+def load_user(user_id):
+        return User.get(user_id)
 
 @app.route('/')
 def index():
-    #TODO: fix function name
     #render homepage
-    return render_template("index.html")
+    return render_template("index.html", isloggedin = current_user.is_active)
 
-@app.route('/ReportMatch')
-def reportMatch_page():
+@app.route('/ProposeMatch')
+def proposeMatch_page():
     #render match reporting page
-    return render_template('reportMatch.html')
+    return render_template('ProposeMatch.html')
 
 
 def calculate_expected(player1, player2):
     #calculate expected win rate using elo formula
-    return (1/(1+(10**( (records.find_one({'Name':player2})['Rating'] - records.find_one({'Name':player1})['Rating'])/D))))
+    # TODO: Ensure that username is unique record in database
+    player1_rating = database.database_query(database.USERS, [('Username','==', player1)])
+    player2_rating = database.database_query(database.USERS, [('Username','==', player2)])
+    player1_rating = player1_rating[0]['Rating']
+    player2_rating = player2_rating[0]['Rating']
+    player1_expected = (1/(1+(10**( (player2_rating - player1_rating)/database.D))))
+    return player1_expected
 
+# start of function to add player matches
+def report_match(player1: str, player2: str, winner:str) -> bool:
 
-### start of function to add player matches
-@app.route('/addMatchToDatabase', methods = ["POST"])
-def report_match():
-    print("IN MATCH REPORTING")
-    #Get data from post request
-    data=request.form
-    # 
-    #   
-    # Get input
-    player1 = data.get("PlayerName1")
-    player2 = data.get("PlayerName2")
-
-    if records.find_one({'Name':player1}) == None or records.find_one({'Name':player2}) == None:
-        return "Names not found", 400
-
-    winner = data.get("Winner")
+    if database.get_user_by_username(player1) == None or database.get_user_by_username(player2) == None:
+        return False
 
     #Calculate expected win rates for both players
     player1_expected = calculate_expected(player1, player2)
@@ -99,64 +67,261 @@ def report_match():
         result = (0,1)
     #if winner is neither player or null return error code
     else:
-        return "No winner selected" , 400
-
-    #update database with new ratings
-    records.update_one({"Name":player1},{"$set" :{"Rating": (records.find_one({"Name":player1})['Rating'] + K*(result[0]-player1_expected)), "Matches": (records.find_one({'Name':player1})['Matches']+1)}})
-    records.update_one({"Name":player2},{"$set" :{"Rating": (records.find_one({"Name":player2})['Rating'] + K*(result[1]-player2_expected)), "Matches": (records.find_one({'Name':player2})['Matches']+1)}})
-
-    #return successful code
-    return 'done' , 200
+        return False
 
 
-@app.route('/addNewPlayer', methods = ["POST"])
-def addNewPlayer():
-    #processes request to get data
-    data = request.form
+    player1_old_score = database.database_query_one(database.USERS, [('Username','==', player1)])
+    player1_old_score = player1_old_score['Rating']
+    player2_old_score = database.database_query_one(database.USERS, [('Username','==', player2)])
+    player2_old_score = player2_old_score['Rating']
+    if player1_old_score == None or player2_old_score == None:
+        return False
 
-    #saves name that needs to be added
-    nameToBeAdded = data['PlayerName']
-    password = data['Password']
-    password_confirmation = data['Password_confirmation']
+    player1_new_score = player1_old_score + database.K*(result[0]-player1_expected)
+    player2_new_score = player2_old_score + database.K*(result[1]-player2_expected)
 
-    if(password != password_confirmation):
-        return 'false', 400
-    
+    # TODO: Check if logic should be moved to database module
+    try :
+        database.database_create(database.MATCHES, {
+            "Player1": player1,
+            "Player2": player2,
+            "Player1_previous_score": player1_old_score,
+            "Player2_previous_score": player2_old_score,
+            "Player1_new_score": player1_new_score,
+            "Player2_new_score": player2_new_score,
+            "Date": datetime.datetime.now()
+        })
+
+        # Update records and catch exceptions
+        database.update_player_rankings(player1, player2, player1_new_score, player2_new_score)
+        return True
+    except Exception as e:
+        print(f'Database exception: {e}')
+        raise e
 
 
-    # checks to see if name exists in database already
-    # TODO: look for better implementation, this was copied from previous project
-    if records.find({}):
-        for record in records.find({}):
-            if record['Name'] == nameToBeAdded:
-                # TODO fix error code
-                return 'false', 418  
-    #creats new record if one does not alreadt exist
-    db.Records.insert_one({"Name": nameToBeAdded, "Password": generate_password_hash(password),  "Rating": STARTING_RATING, "Matches": 0 })
-    return 'done', 201
 
 @app.route('/showRankings')
 def displayRankings():
-    return render_template('showRankings.html')
+    data = database.database_query(database.USERS, filters=[], fields= ['Rating', 'FirstName', 'LastName','Username','DisplayUsername'])
+    # Sort data by rating in descending order
+    final = []
+    for record in data:
+        print(record)
+        if record['DisplayUsername'] == 'true':
+            final.append({
+                'Rating': record['Rating'],
+                'FirstName': record['Username'],
+            })
+        else:
+            final.append({
+                'Rating': record['Rating'],
+                'FirstName': record['FirstName'],
+                'LastName': record['LastName'],
+            })
+    return render_template('showRankings.html', scores=final)
+
+
 
 @app.route('/getRankings' , methods = ['POST'])
 def getRankings():
-    data = list(records.find({},{'Rating':1,'Name':1, '_id':0}))
-    print(data)
+    # TODO: Return ratings in order
+    data = database.database_query(database.USERS, filters=[], fields= ['Rating', 'FirstName', 'LastName'])
     data = jsonify(data)
     return data, 200
 
 
 @app.route('/register')
 def show_registration():
-    print('HERE')
     return render_template('register.html')
 
+@app.route('/getUsernames')
+def getUsernames():
+    result = database.database_query(database.USERS, filters=[], fields=['Username'])
+    data = jsonify(result)
+    return data, 200
 
 
+@app.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html', name = current_user.name, displayUsername = current_user.displayUsername, username = current_user.username)
 
+@app.route('/getUserMatchHistory', methods = ["POST"])
+@login_required
+def getUserMatchHistory():
+    results = database.database_query(database.MATCHES, [('Player1' , '==' , current_user.username)])
+    results = results + (database.database_query(database.MATCHES, [('Player2' , '==' , current_user.username)]))
+    results = {'matches' : results}
+    results['requester'] = current_user.username
+    return jsonify(results)
+
+@app.route('/setDisplayUsername', methods = ["POST"])
+@login_required
+def setDisplayUsername():
+    data = request.values
+    if data['DisplayUsername'] == None:
+        return 'Invalid Display Username', 422
+    database.database_update(database.USERS, current_user.id, {'DisplayUsername':data['DisplayUsername']})
+    return 'done', 200
+
+@app.route('/pendingMatches')
+@login_required
+def pendingMatches():
+    return render_template('pendingMatches.html', name = current_user.name, username = current_user.username)
+
+
+def checkValidOpponent(data):
+    if data['PlayerUsername2'] == current_user.username:
+        return 'Invalid User. Opponent is current user' , 422
+    if database.database_query_one(database.USERS, [('Username','==', data['PlayerUsername2'])]) == None:
+        return 'Invalid User. User not found' , 403
+    if database.database_query_one(database.PENDING_MATCHES, [('Player1','==',current_user.username),('Player2','==',data['PlayerUsername2']),('Status' , '!=' , 2)]) != None or database.database_query_one(database.PENDING_MATCHES, [('Player1','==',data['PlayerUsername2']),('Player2','==',current_user.username),('Status' , '!=' , 2)]) != None:
+        # Check if match already proposed by either player
+        return 'Match Already Proposed' , 423
+    return 'Valid User' , 200
+
+
+@app.route('/proposeMatchRequest', methods = ["POST"])
+@login_required
+def proposeMatchRequest():
+    data=request.values
+    opponentCheck = checkValidOpponent(data)
+    if opponentCheck[1] != 200:
+        return opponentCheck[0], opponentCheck[1]
+    database.database_create(database.PENDING_MATCHES, {
+        "Player1": current_user.username,
+        "Player2": data['PlayerUsername2'],
+        "Status": 0,
+        "Date_Proposed": datetime.datetime.now(),
+        "Date_Expired": datetime.datetime.now() + datetime.timedelta(days=3)
+    })
+    return 'done' , 200
+
+@app.route('/getProposedMatches', methods = ['POST'])
+@login_required
+def getProposedMatches():
+    # result_data = {'matches' : list(PENDING_MATCHES.find({"Player2":current_user.username}))}
+
+    result_data = database.database_query(database.PENDING_MATCHES, [('Player1','==',current_user.username)])
+    result_data += database.database_query(database.PENDING_MATCHES, [('Player2','==',current_user.username)])
+    return {'matches':result_data}, 200
+
+@app.route('/acceptProposedMatch', methods = ["POST"])
+@login_required
+def acceptProposedMatch():
+
+    data=request.values
+    match_id = data['match_id']
+    DB_result = database.database_update(database.PENDING_MATCHES, match_id, {'Status':1})
+    # Check if update is successful
+    print(f'Update result: {DB_result}')
+    if DB_result == None:
+        return 'Error updating match', 500
+    return 'done' , 200
+
+@app.route('/rejectProposedMatch', methods = ["POST"])
+@login_required
+def rejectProposedMatch():
+    data=request.values
+    match_id = data['match_id']
+    database.database_update(database.PENDING_MATCHES, match_id, {'Status':2})
+    # Check if update is successful
+    return 'done' , 200
+
+@app.route('/MarkWinnerPage', methods = ["GET"])
+@login_required
+def MarkWinnerPage():
+    data=request.args
+    match_details = database.database_query_one(database.PENDING_MATCHES, [('id','==',data['match_id'])])
+    opponent = ''
+    if(current_user.username==match_details['Player1']):
+        opponent = match_details['Player2']
+    else:
+        opponent = match_details['Player1']
+    return render_template('markWinner.html', username = current_user.username, match_id = data['match_id'], name = current_user.name, opponent=opponent)
+
+@app.route('/sendWinner', methods = ['POST'])
+@login_required
+def sendWinner():
+    data=request.values
+    match_id = data['match_id']
+    match_details = database.database_query_one(database.PENDING_MATCHES, [('id','==',match_id)])
+    if ((current_user.username != match_details['Player1']) and (current_user.username != match_details['Player2'])):
+        return 'Incorrect user' , 403
+
+    if(current_user.username == match_details['Player1']):
+        # User is proposer of match
+        if(match_details['Status'] == 1):
+            # Accepted, no winner yet
+            # Set status to 3, Keep track of winner?
+            database.database_update(database.PENDING_MATCHES, match_id, {'Status':3, 'Winner':data['Winner']})
+            return 'Record Updated' , 200
+        elif(match_details['Status']==4):
+            # Opponent has already recorded match
+            # Calculate match and remove from pending matches
+            if(data['Winner'] != match_details['Winner']):
+                database.database_delete(database.PENDING_MATCHES, match_id)
+                # Decrease trust in players
+                decreaseTrust(match_details['Player1'])
+                decreaseTrust(match_details['Player2'])
+                return 'Winner Mismatch' , 450
+            try:
+                report_match(player1=match_details['Player1'], player2=match_details['Player2'], winner=match_details['Winner'])
+                database.database_delete(database.PENDING_MATCHES, match_id)
+                return 'Record Updated' , 200
+
+            except:
+                return 'Database Failed' , 503
+    else:
+        # Current user is player2, ie proposed player
+        if(match_details['Status'] == 1):
+            # No one has recorded match yet. Set status to 4
+            database.database_update(database.PENDING_MATCHES, match_id, {'Status':4, 'Winner':data['Winner']})
+            return 'Record Updated' , 200
+        elif(match_details['Status']==3):
+            # Opponent has already recorded, process match and remove from table
+            if(data['Winner'] != match_details['Winner']):
+                database.database_delete(database.PENDING_MATCHES, match_id)
+                # Decrease trust in players
+                decreaseTrust(match_details['Player1'])
+                decreaseTrust(match_details['Player2'])
+                return 'Winner Mismatch' , 450
+            try:
+                report_match(player1=match_details['Player1'], player2=match_details['Player2'], winner=match_details['Winner'])
+                database.database_delete(database.PENDING_MATCHES, match_id)
+                return 'Record Updated' , 200
+            except:
+                return 'Database Failed' , 503
+            
+
+
+@app.route('/deleteAccount')
+@login_required
+def deleteAccountPage():
+    return render_template('deleteAccount.html' )
+
+
+@app.route('/deleteAccountRequest', methods = ['POST'])
+@login_required
+def deleteAccountRequest():
+    # TODO: Implement account deletion
+    database.database_update_with_query(database.MATCHES, [('Player1','==',current_user.username)], {'Player1':"Deleted User"})
+    database.database_update_with_query(database.MATCHES, [('Player2','==',current_user.username)], {'Player2':"Deleted User"})
+    database.database_update_with_query(database.PENDING_MATCHES, [('Player1','==',current_user.username)], {'Player1':"Deleted User"})
+    database.database_update_with_query(database.PENDING_MATCHES, [('Player2','==',current_user.username)], {'Player2':"Deleted User"})
+    database.database_delete(database.USERS, current_user.id)
+    logout_user()
+    return 'Account Deleted', 200
+
+def decreaseTrust(username : str):
+    print(f'Decreasing trust in {username}')
+    user_id = database.get_user_by_username(username)['id']
+    database.database_increment(database.USERS, user_id, 'DisputedMatches', 1)
+    database.database_increment(database.USERS, user_id, 'Matches', 1)
 
 
 #use for local development
 if __name__=='__main__':
+    app.config['SESSION_COOKIE_SECURE'] = False 
     app.run(debug = True, host='0.0.0.0', port=5000)

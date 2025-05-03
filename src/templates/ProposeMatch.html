@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pool Rankings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/pages/proposematch.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+</head>
+<body>
+    <div class = "background background_img">
+        <h1>Propose Match</h1>
+        <div class="flex_container">
+            <div>
+                <h2 id="proposeMatchInstruction"> Enter second player name</h2>
+            </div>
+            <div class="flex_item">
+                <input class="opponent_searchbox" type = "search" name = "PlayerName2" id = "PlayerName2" list="username_list" >    
+            </div>
+           
+        </div>
+        
+
+    </div>
+
+        <form>
+            <input type="hidden" name="csrf_token" id="csrf_token" value="{{csrf_token()}}" />
+
+        </form>
+
+
+    <div>
+        <button onclick = 'sendData()', id="reportMatchFormButton" class="index_nav_buttons">
+            Submit
+        </button>
+    </div>
+    <div>
+        <form action = '/'> 
+            <button type = 'submit' name = 'home' class="index_nav_buttons">Home</button>
+        </form>
+    </div>
+
+    <div id="toast" class="fixed bottom-4 right-4 bg-red-600 text-white p-3 rounded shadow hidden">
+        Match proposal failed.
+    </div>
+    
+    <datalist id="username_list">
+    </datalist>
+
+
+
+</body>
+<script>
+    window.onload = function getUsernames(){
+    // function getUsernames(){
+        $.ajax({
+            success:function(data){
+                console.log(data)
+                for (record in data){
+                    console.log(record)
+                    document.getElementById("username_list").innerHTML += ("<option value= " + data[record].Username + "> \n")
+                }
+            },
+            failure:function(){
+                alert("Trouble contacting server")
+            },
+            url:'/getUsernames'
+        })
+    }
+
+
+
+    function sendData(){
+        let player2 = document.getElementById('PlayerName2').value
+        let csrf = document.getElementById("csrf_token").value
+        // TODO: Move to server side
+
+        $.ajax({
+
+            statusCode:{
+                200: function(){
+                    window.location.replace("/");
+                },
+                403:function(){
+                        $('#toast').text("The player was not found")
+                },
+                422: function(){
+                    $('#toast').text("The opponent cannot be the same as you")
+                },
+                423: function(){
+                    $('#toast').text("You already have a match proposed with this player")
+                },
+                500: function(){
+                    alert("The server is unable to process this request right now.")
+                }
+
+            },
+
+
+            url:'/proposeMatchRequest',
+            type:'POST',
+            data:{'PlayerUsername2':player2, "csrf_token":csrf},
+            error: function (jqXHR, textStatus, errorThrown) {
+                if(jqXHR.status >= 400 && jqXHR.status < 500){
+                    $('#toast').fadeIn().delay(6000).fadeOut()
+                    console.log(jqXHR.status)
+                    console.log(textStatus)
+                    console.log(errorThrown)
+                }else if (jqXHR.status >= 500 && jqXHR.status < 600){
+                    alert("The server is unable to process this request right now.")
+                    console.log(jqXHR.status)
+                    console.log(textStatus)
+                    console.log(errorThrown)
+                }
+            }
+        })
+    }
+</script>
+
+</html>

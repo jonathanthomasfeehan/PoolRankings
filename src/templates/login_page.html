@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pool Rankings Registration</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/pages/login_page.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+</head>
+<body>
+    <div class="field_container">
+        <div class="registration_field">
+            <label for = "Username">Username</label>
+            <input type = "text" name = "Username" id = "Username" required>
+        </div>
+        <div class="registration_field">
+            <label for = "Password">Enter Password</label>
+            <input type = "password" name = "Password" id = "Password" required>
+        </div>
+        <div>
+            <button onclick = sendData() name = "Login" class = "index_nav_buttons" id="submit_button" >
+                Login
+            </button>
+        </div>
+        <div>
+            <form action = '/'>
+                <button type = 'submit' name = 'home' class="index_nav_buttons">Home</button>
+            </form>
+        </div>
+        <input type="hidden", id="csrf", name="csrf"  value="{{csrf_token()}}">
+    </div>
+
+    
+
+</body>
+
+<script>
+
+
+    function sendData(){
+
+        let username = document.getElementById('Username').value
+        let password = document.getElementById('Password').value
+        let csrf = document.getElementById("csrf").value
+        let next = window.location.search.split('next=')[1]
+
+        // sends post request, if successful then alerts client
+        // 
+        $.ajax({
+            url:'/login',
+            type:'POST',
+            data:{'username':username, 'password':password, "csrf_token":csrf, "next":next },
+            success:function(response){
+                document.getElementById("Password").value = "";
+                console.log("SUCCESS, redirecting")
+                // TODO: Remove script redirect if this doesnt work
+                // window.location.replace("/profile");
+                console.log(response)
+                window.location.replace(response.redirect_url)
+
+            },
+            error:function(jqXHR, exception){
+                console.log(jqXHR)
+                if(jqXHR.status==470) {
+                    alert("Login credentials incorrect. Please try again")
+                    document.getElementById("Password").value = "";
+
+                }
+               
+
+                else{
+                    alert("Could not login, please try again")
+                    document.getElementById("Password").value = "";
+
+
+                }
+            }
+
+        })
+    }
+
+
+
+</script>
