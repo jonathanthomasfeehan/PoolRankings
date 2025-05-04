@@ -51,6 +51,9 @@
         $.ajax({
             url:'/login',
             type:'POST',
+            headers:{
+                'X-CSRFToken': csrf,
+            },
             data:{'username':username, 'password':password, "csrf_token":csrf, "next":next },
             success:function(response){
                 document.getElementById("Password").value = "";
@@ -63,6 +66,7 @@
             },
             error:function(jqXHR, exception){
                 console.log(jqXHR)
+                console.log("ERROR")
                 if(jqXHR.status==470) {
                     alert("Login credentials incorrect. Please try again")
                     document.getElementById("Password").value = "";

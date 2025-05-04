@@ -9,21 +9,21 @@ html, body {
     width: 100vw;
     margin: 0;
     padding: 0;
-    background-image: url("./../../src/index_background_wide_1080.jpg");
+    /* background-image: url("./../../src/index_background_wide_1080.jpg");
     background-repeat: no-repeat;
     background-size: cover;
-    background-position: center;
-    background-color: rgb(31, 87, 23);
+    background-position: center; */
+    background-color: rgb(13, 37, 9);
 }
 
 
 .nav_bar{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: space-between;
     align-items: center;
     padding: 20px 50px 20px 50px;
-    width: 50%;
+    width: 100%;
 }
 
 .nav_bar>a{
@@ -129,12 +129,32 @@ html, body {
     margin-left: 25px;
 }
 
+@media screen and (max-width: 430px) {
+    /* Styles for iPhone 15 and iPhone 15 Plus */
+    .nav_bar{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 50px 20px 50px;
+        width: 100%;
+    }
+  }
 
 @media only screen and (min-width: 768px) {
     html{
         background-image: url("./../../src/index_background_wide_1080.jpg");
         background-repeat: no-repeat;
-        background-size: cover
+        background-size: cover,
+    }
+
+    .nav_bar{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 50px 20px 50px;
+        width: 50%;
     }
 
     #title{

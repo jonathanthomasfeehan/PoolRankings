@@ -3,7 +3,7 @@ from flask import Flask, jsonify, render_template, request, Blueprint
 from flask_login import login_required, current_user, LoginManager, logout_user
 import os
 import datetime
-from flask_wtf import CSRFProtect
+from flask_wtf.csrf import CSRFProtect, CSRFError
 from modules.User import User
 from modules.auth import auth as auth_blueprint
 import modules.database as database
@@ -14,9 +14,13 @@ app = Flask(__name__, template_folder='./src/templates', static_folder='./src/st
 
 main_blueprint = Blueprint('main', __name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SECURE'] = True 
-app.config['PREFERRED_URL_SCHEME']='https',
+app.config['SESSION_COOKIE_HTTPONLY'] = os.getenv('SESSION_COOKIE_HTTPONLY', default=True).lower() == 'true'
+app.config['SESSION_COOKIE_SECURE'] = os.getenv('SESSION_COOKIE_SECURE', default=True).lower() == 'true'
+app.config['SESSION_COOKIE_SAMESITE'] = os.getenv('SESSION_COOKIE_SAMESITE', default='Lax')
+app.config['PREFERRED_URL_SCHEME']='https'
+# app.config['SESSION_COOKIE_HTTPONLY'] = True
+# app.config['SESSION_COOKIE_SECURE'] = True 
+# app.config['PREFERRED_URL_SCHEME']='https',
 csrf = CSRFProtect(app)
 CORS(app)
 login_manager = LoginManager()
@@ -29,8 +33,24 @@ app.register_blueprint(main_blueprint)
 def load_user(user_id):
         return User.get(user_id)
 
+# USED FOR DEBUGGING ONLY
+# FIXME: Remove this in production
+@app.errorhandler(CSRFError)
+def handle_csrf_error(e):
+    # Log the CSRF failure details
+    app.logger.warning(f"CSRF failure: {e.description}")
+    app.logger.warning(f"Request headers: {dict(request.headers)}")
+    app.logger.warning(f"Request cookies: {request.cookies}")
+    app.logger.warning(f"Request form: {request.form}")
+    app.logger.warning(f"Request JSON: {request.get_json(silent=True)}")
+    
+    # Return a custom response
+    return jsonify({'error': 'CSRF token missing or incorrect'}), 400
+
+
 @app.route('/')
 def index():
+    print("Serving index page")
     #render homepage
     return render_template("index.html", isloggedin = current_user.is_active)
 
