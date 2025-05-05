@@ -42,3 +42,7 @@ However, if you're interested in testing locally, you can:
 
 Curious about the evolution of this project, and the lessons I’ve learned along the way?  
 [Read the development story »](PROJECT_STORY.md) _(optional)_
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.txt) file for details.
