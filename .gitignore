@@ -2,7 +2,7 @@ __pycache__/app.cpython-39.pyc
 __pycache__/constants.cpython-39.pyc
 __pycache__/constants.cpython-39.pyc
 __pycache__/auth.cpython-39.pyc
-
+__pycache__/*
 *.pyc
 
 README.Docker.md

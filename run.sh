@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Dev environnment runs flask off of the built in WSGI server
+# Prod environment runs flask off of gunicorn locally
+# The live demo runs off of a cloud service using gunicorn
 
 # Check if an environment is provided
 if [ -z "$1" ]; then

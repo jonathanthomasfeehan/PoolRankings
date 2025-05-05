@@ -35,6 +35,8 @@ However, if you're interested in testing locally, you can:
 - Clone the repo and run the app locally using Docker
 - Use your own Firebase credentials by storing them in the ./Secrets folder and updating the Docker ENV variables.
 > Note: Local development requires access to a Firebase project. If you'd like to test locally, consider creating a free Firebase project and updating the environment variables accordingly.
+
+> Note: The run.sh script takes a "dev" or "prod" variable. This will run the application locally by running the docker compose file. The application will run on either the built in flask wsgi server (dev) or a gunicorn server (dev)
  
 ## Learn More
 
