@@ -14,9 +14,9 @@
 </head>
 <body>
 
-    
+    {% include 'navigation.html' %}
+
     <div class="custom-container">
-        <img src="{{ url_for('static', filename= 'src/home.png') }}" alt="Home" id="home_nav" class="invert_icon" onclick="window.location.href='/'">
 
         <h1 id="title">
             Hello {{name}}
@@ -28,7 +28,6 @@
         </div>
 
         <label class="switch" >
-            
             <input type="checkbox" id="toggleSwitch">
             <span class="slider"></span>
         </label>
@@ -43,7 +42,7 @@
                     <th>You</th>
                     <th>Opponent</th>
                     <th>Result</th>
-                    <th>Date</th>
+                    <th class="d-none d-lg-table-cell" >Date</th>
                 </tr>
             </thead>
             <tbody id="matches_list">
@@ -51,20 +50,19 @@
             </tbody>
         </table>
 
-        <div>
+        <div class="custom_button_container">
             <form action = "{{ url_for('auth.passwordReset') }}">
-                <button type = 'submit' name = 'passwordReset' class="index_nav_buttons">Update Password</button>
+                <button type = 'submit' name = 'passwordReset' class="index_nav_buttons profile_buttons">Update Password</button>
             </form>
          </div>
-         <!-- TODO: delete account option -->
-         <div>
+         <div class="custom_button_container">
             <form action = '/deleteAccount'>
-                <button type = 'submit' name = 'home' class="index_nav_buttons">Delete Account</button>
+                <button type = 'submit' name = 'home' class="index_nav_buttons profile_buttons">Delete Account</button>
             </form>
         </div>
-         <div>
+         <div class="custom_button_container">
             <form action = '/'>
-                <button type = 'submit' name = 'home' class="index_nav_buttons">Home</button>
+                <button type = 'submit' name = 'home' class="index_nav_buttons profile_buttons">Home</button>
             </form>
         </div>
         
@@ -109,7 +107,7 @@
             data: {"csrf_token":"{{csrf_token()}}"},
             success:function(response){
                 console.log(response)
-                for(var i = response.matches.length-1; i>=0; i--){
+                for(var i = response.matches.length-1; i>=response.matches.length-10; i--){
                     let Player1 = response.matches[i].Player1
                     let Player2 = response.matches[i].Player2
                     console.log(response.requester)
@@ -140,8 +138,8 @@
                     `<tr class = ${(requester_win) ? `table-success` : `table-danger`} > 
                         <td> ${requester}</td>
                         <td> ${otherplayer}</td>
-                        <td  ${(requester_win) ? `class = "text-success">+` : `class = "text-danger">-`}${scoredelta} </td>
-                        <td> ${matchDate} </td>
+                        <td  ${(requester_win) ? `class = "text-success">+` : `class = "text-danger">-`}${Math.floor(scoredelta)} </td>
+                        <td class="d-none d-lg-table-cell"> ${matchDate} </td>
                         </tr>
                         `
 

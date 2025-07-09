@@ -57,7 +57,7 @@ def index():
 @app.route('/ProposeMatch')
 def proposeMatch_page():
     #render match reporting page
-    return render_template('ProposeMatch.html')
+    return render_template('ProposeMatch.html', name = current_user.name, displayUsername = current_user.displayUsername, username = current_user.username, isloggedin = current_user.is_active)
 
 
 def calculate_expected(player1, player2):
@@ -127,7 +127,6 @@ def displayRankings():
     # Sort data by rating in descending order
     final = []
     for record in data:
-        print(record)
         if record['DisplayUsername'] == 'true':
             final.append({
                 'Rating': record['Rating'],
@@ -139,7 +138,7 @@ def displayRankings():
                 'FirstName': record['FirstName'],
                 'LastName': record['LastName'],
             })
-    return render_template('showRankings.html', scores=final)
+    return render_template('showRankings.html', scores=final, name = current_user.name, displayUsername = current_user.displayUsername, username = current_user.username, isloggedin = current_user.is_active)
 
 
 
@@ -165,7 +164,7 @@ def getUsernames():
 @app.route('/profile')
 @login_required
 def profile():
-    return render_template('profile.html', name = current_user.name, displayUsername = current_user.displayUsername, username = current_user.username)
+    return render_template('profile.html', name = current_user.name, displayUsername = current_user.displayUsername, username = current_user.username, isloggedin = current_user.is_active)
 
 @app.route('/getUserMatchHistory', methods = ["POST"])
 @login_required
@@ -188,7 +187,7 @@ def setDisplayUsername():
 @app.route('/pendingMatches')
 @login_required
 def pendingMatches():
-    return render_template('pendingMatches.html', name = current_user.name, username = current_user.username)
+    return render_template('pendingMatches.html',  name = current_user.name, displayUsername = current_user.displayUsername, username = current_user.username, isloggedin = current_user.is_active)
 
 
 def checkValidOpponent(data):

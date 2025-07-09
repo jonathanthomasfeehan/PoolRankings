@@ -15,11 +15,9 @@
 
 </head>
 <body>
-
+    {% include 'navigation.html' %}
     
     <div class="custom-container">
-        <img src="{{ url_for('static', filename= 'src/home.png') }}" alt="Home" id="home_nav" class="invert_icon" onclick="window.location.href='/'">
-
         <h1>
             Hello {{name}}
         </h1>
