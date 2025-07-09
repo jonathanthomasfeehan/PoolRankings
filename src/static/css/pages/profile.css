@@ -48,7 +48,7 @@ body {
     display: inline-block;
     width: 50px;
     height: 28px;
-    margin-right: 30px;
+    margin-right: 5vw;
   }
   
   .switch input {
@@ -93,7 +93,7 @@ body {
     color: white;
     font-size: 1.5em;
     /* margin-left: 10px; */
-    margin-right: 30px;
+    margin-right: 1vw;
     height: 20px;
     line-height: 20px;
   }
@@ -102,6 +102,7 @@ body {
 .custom_tooltip {
     position: relative;
     display: inline-block;
+    width: 30vw;
   }
   
   /* Tooltip text */
@@ -122,6 +123,46 @@ body {
   }
   
   /* Show the tooltip text when you mouse over the tooltip container */
-  .custom_tooltip:hover .custom_tooltiptext {
-    visibility: visible;
+.custom_tooltip:hover .custom_tooltiptext {
+  visibility: visible;
+}
+
+
+
+.profile_buttons{
+  width: 75vw;
+  margin-left: 12vw;
+  font-size: large;
+}
+
+.custom_button_container {
+  height: 100px;
+}
+
+
+@media (min-width: 992px) {
+  
+  .profile_buttons{
+    width: 25vw;
+    margin-left: 35vw;
+    font-size: large;
   }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) { 
+
+
+
+}
+
+ @media (min-width: 1400px) { 
+
+  .profile_buttons{
+  width: 25vw;
+  margin-left: 35vw;
+  font-size: large;
+}
+
+
+ }

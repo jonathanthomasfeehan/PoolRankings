@@ -11,9 +11,10 @@ auth = Blueprint('auth', __name__)
 
 @auth.route('/login', methods=['POST', 'GET'])
 def login():
-    print(f'User is active: {current_user.is_active}')
+    print(f"Session: {User.is_authenticated}")  # should trigger cookie creation
 
     if request.method == 'POST':
+        print("In login POST")
         username = request.form.get('username')
         password = request.form.get('password')
         user = User.find_by_username(username)
@@ -28,7 +29,6 @@ def login():
         else:
             print("Failed password")
             return ('Incorrect Password', 470)
-    print("NOT POST")
     return render_template('login_page.html')
 
 @auth.route('/logout')

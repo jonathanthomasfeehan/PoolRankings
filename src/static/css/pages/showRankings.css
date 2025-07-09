@@ -1,37 +1,13 @@
 
-#list{
-    align-items: center;
-    align-content: center;
-
-}
-.list_row{
-    display: flex;
-    flex-direction: row;
-}
-
-.align_left{
-    text-align: left;
-    border: 2px #eee solid;
-    width: 50%;
-    padding-left: 10%;
-
-}
-
-.align_right{
-    text-align: right;
-    border: 2px #eee solid;
-    width: 50%;
-    padding-right: 10px;
-
-}
 
 
+ 
 html{
     background-color: rgb(31, 87, 23);
 }
 
 .index_nav_buttons{
-    /* width: 100%; */
+    width: 100%; 
     color: white;
     font-size: x-large;
     background-color: #6b0b0b;
@@ -44,15 +20,26 @@ html{
 
 
 p{
-    color: white;
+    color: rgb(0, 0, 0);
 }
 
 h1 {
     border: 2px #eee solid;
     color: white;
     text-align: center;
-    padding: 10px;
+    padding: 20px;
     width: 50%;
     margin-left: auto;
     margin-right: auto;
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
+
+/* tr:hover {
+    background-color: #000000;
+} */
+
+.list_row:hover td {
+    background-color: #858585;
+
+} 

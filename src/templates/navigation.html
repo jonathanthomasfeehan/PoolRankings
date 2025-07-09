@@ -1,0 +1,48 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-black bg-opacity-50 ">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+            <img src="{{ url_for('static', filename= 'src/home.png') }}" alt="" width="30" height="30" class = "invert_icon">
+          </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon invert_icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {% if isloggedin %}
+
+        <li class="nav-item">
+            <a class="nav-link text-white active" aria-current="page" href="{{ url_for('profile') }}">Profile</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white active" aria-current="page" href="{{ url_for('proposeMatch_page') }}">Propose Match</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white active" aria-current="page" href="{{ url_for('pendingMatches') }}">Pending Maches</a>
+        </li>
+
+        {% else %}
+
+        <li class="nav-item">
+            <a class="nav-link text-white active" aria-current="page" href="{{ url_for('show_registration') }}">Register</a>
+        </li>
+
+        {% endif %} 
+
+        <li class="nav-item">
+            <a class="nav-link text-white active" href="{{ url_for('displayRankings') }}">Show Rankings</a>
+        </li>
+
+        </ul>
+        {% if isloggedin %}
+
+        <li class="d-flex">
+            <a class="nav-link text-white active" href="{{ url_for('auth.logout') }}">Logout</a>
+        </li>
+        {% else %}
+        <li class="d-flex">
+            <a class="nav-link text-white active" aria-current="page" href="{{ url_for('auth.login_page') }}">Login</a>
+        </li>
+        {% endif %}
+      </div>
+    </div>
+</nav>

@@ -1,43 +1,120 @@
 
 label{
     color: white;
-    font-size: xx-large;
-}
 
-.registration_field{
-    align-content: center;
-    margin-top: 50px;
-    height: 50px;
-    display: inline-block;
-    text-align: center;
 }
 
 .field_container{
     display: flex;
     flex-direction: column;
+    margin-top: 10vh;
+    /* margin-left: auto;
+    margin-right: auto; */
 }
 
 .field_container > label{
     margin-right: 50px;
 }
 
-
-
-/* #submit_button{
-    color: white;
-    font-size: x-large;
-    background-color: #6b0b0b;
-    padding: 20px 50px 20px 50px;
-    width: 30%;
-    margin-left: 35%;
+.login_field{
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    margin-top: 3vh;
+    height: 5vh;
+    text-align: center;
+    margin-left: auto;
     margin-right: auto;
-    margin-top: 50px
+    margin-bottom: 5vh;
+}
+
+.login_field * {
+    width: 40vw;
+    height: 2vh;
+    font-size: xx-large;
+    text-align: center;
+    margin-bottom: 2vh;
 
 }
 
-#submit_button:hover{
+.login_field input {
+    height: 4vh;
+    font-size: large;
+    text-align: center;
+    margin-bottom: 2vh;
+    margin-top: 4vh;
 
-    background-color: #460505;
+}
 
+.login_field label {
+    margin-bottom: 2vh;
+    font-size: x-large;
+    text-align: center;
+    width: 60vw;
+    height: 5vh;
+}
 
+/* .custom-login-label-container{
+    width: 100vw;
 } */
+
+.login_field div{
+    width: 100vw;
+}
+
+
+
+
+.login_button {
+    width: 40vw;
+    margin-left: 30vw;  
+    
+}
+
+
+.custom-button-container {
+    margin-top: 3vh;
+    width: 100vw;
+}
+
+
+
+
+@media (min-width: 576px) { 
+    
+        
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) { 
+ 
+}
+
+ /* Large devices (desktops, 992px and up) desktops, 1080px h on the upper end */
+@media (min-width: 992px) {
+ 
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) { 
+
+    .custom-button-container {
+    margin-left: 7.5vw;
+    width: 50vw;
+    }
+
+
+    .login_button{
+        width: 25vw;
+    }
+
+    .login_field input {
+        width: 25vw;
+    }
+
+}
+
+ @media (min-width: 1400px) { 
+
+
+ }

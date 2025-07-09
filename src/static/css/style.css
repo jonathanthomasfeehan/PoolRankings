@@ -8,12 +8,20 @@ h1 {
     margin-right: auto;
 }
 
+.invert_icon{
+    filter: invert(1);
+}
+
 p{
     color: white;
 }
 
 html{
     background-color: rgb(31, 87, 23);
+}
+
+body{
+    background-color: rgb(31, 87, 23) !important;
 }
 
 .index_nav_buttons{
