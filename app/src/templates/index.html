@@ -26,7 +26,7 @@
         </div class=align-content-center>
         {% if isloggedin %}
                 <div class="index_buttons">
-                    <form action = "{{ url_for('proposeMatch_page') }}">
+                    <form action = "{{ url_for('main.proposeMatch_page') }}">
                         <button type = 'submit' name = 'ProposeMatch' class="index_nav_buttons">Propose a Match</button>
                     </form>
                 </div>            
@@ -38,7 +38,7 @@
             </div>
         {% endif %}
             <div class="index_buttons">
-                <form action = "{{ url_for('displayRankings') }}">
+                <form action = "{{ url_for('main.displayRankings') }}">
                     <button type = 'submit' class="index_nav_buttons">Rankings</button>
                 </form>
             </div>

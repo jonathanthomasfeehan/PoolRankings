@@ -73,5 +73,5 @@ ENV FLASK_ENV=Development
 # Change to ./app.py when deploying
 
 
-CMD python app.py
-# CMD ["gunicorn" , "-w" , "4", "-b", "0.0.0.0:5000" , "app:app"]
+
+CMD ["gunicorn" , "-w" , "4", "-b", "0.0.0.0:5000" , "app:create_app('app.config.DevConfig')"]
