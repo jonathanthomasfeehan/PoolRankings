@@ -1,31 +1,52 @@
 from app import database as db
 from unittest.mock import patch, MagicMock
+import pytest
+import json
+import google.cloud.firestore_v1 as firestore
+import os
+
+@pytest.fixture(scope='module', autouse=True)
+def seed_database():
+    """Fixure to seed the database for integration tests."""
+    with open('tests/integration/database_seed.json', 'r') as f:
+        seed_data = json.load(f)
+    
+    for collection_name, documents in seed_data.items():
+        collection=db.database.collection(collection_name) 
+        # ???
+        for doc in documents:
+            doc_ref = collection.document(doc['id'])
+            doc_ref.set(doc)
+    
+
+def test_emulator_environment():
+    """Test if the Firestore emulator is being used."""
+    assert os.getenv("FIRESTORE_EMULATOR_HOST"), "Firestore emulator not set"
+    assert os.getenv("FIRESTORE_PROJECT_ID") == "demo-project", "Incorrect project ID"
+
+def test_emulator_has_seed_data():
+    users = db.database.collection("USERS").get()
+    assert len(users) > 0, "Expected USERS seed data present"
 
 
 def test_database_create():
     """Test the database_create function."""
-    # with patch('app.database.database.') as mock_db:
-    #     mock_collection = MagicMock()
-    #     mock_doc_ref = MagicMock()
+    data = {
+        'FirstName': 'John',
+        'LastName': 'Doe',
+        'Username': 'johndoe',
+        'Password': 'hashed_password'
+    }
 
-    #     mock_db.collection.return_value = mock_collection
-    
-    #     mock_collection.id = 'USERS'
-    #     mock_collection.dcoument.return_value = mock_doc_ref
-    #     mock_doc_ref.id = 'mock_id'
-    #     mock_db.collection.return_value = mock_collection
-
-    #     data = {
-    #         'FirstName': 'John',
-    #         'LastName': 'Doe',
-    #         'Username': 'johndoe',
-    #         'Password': 'hashed_password'
-    #     }
-
-    #     result = db.database_create(mock_collection, data)
-
-    #     assert result is not None
-    #     mock_collection.document.assert_called_once_with()
+    result = db.database_create(db.USERS, data)
+    assert result is not None, "Expected database_create to return a result"
+    doc = db.USERS.document(result[1].id).get()
+    assert doc.exists, "Expected document to be created in USERS collection"
+    doc = doc.to_dict()
+    assert doc['FirstName'] == 'John', "Expected FirstName to be 'John' in created document"
+    assert doc['LastName'] == 'Doe', "Expected LastName to be 'Doe' in created document"
+    assert doc['Username'] == 'johndoe', "Expected Username to be 'johndoe' in created document"
+    assert 'Password' in doc, "Expected Password field to be present in created document"
     # db.database_create()
 
 

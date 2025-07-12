@@ -6,11 +6,35 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 import google.cloud.firestore_v1 as firestore_v1
 from google.cloud.firestore_v1 import Increment
+from google.auth import credentials as google_credentials
 
 
-firebase_credentials = credentials.Certificate(os.getenv('FIREBASE_SECRET_KEY'))
-firebase_admin.initialize_app(firebase_credentials)
-database = firestore.client()
+# firebase_credentials = credentials.Certificate(os.getenv('FIREBASE_SECRET_KEY'))
+# firebase_admin.initialize_app(firebase_credentials)
+# database = firestore.client()
+
+
+# Updated to handle both emulator and production environments
+def initialize_database():
+    if os.getenv("FIRESTORE_EMULATOR_HOST"):
+        # Running with Firestore Emulator
+        print("Using Firestore Emulator")
+        if not firebase_admin._apps:
+            firebase_admin.initialize_app()  # No credentials, connects to emulator
+
+        return firestore_v1.Client(project=os.getenv("FIRESTORE_PROJECT_ID"), credentials=google_credentials.AnonymousCredentials())
+    else:
+        # Running in production
+        cred_path = os.getenv("FIREBASE_SECRET_KEY")
+        if not cred_path:
+            raise RuntimeError("FIREBASE_SECRET_KEY must be set in production")
+        cred = credentials.Certificate(cred_path)
+        if not firebase_admin._apps:
+            firebase_admin.initialize_app(cred)
+
+    return firestore.client()
+    
+database = initialize_database()
 
 USERS = database.collection('USERS')
 MATCHES = database.collection('MATCHES')
@@ -26,12 +50,12 @@ def database_create(collection, data):
         doc_ref = database.collection(collection.id).document()  # Auto-generate ID
         data['id'] = doc_ref.id  # Store the document ID inside the data
         db_create_result = doc_ref.set(data)
-        return db_create_result
+        return db_create_result, doc_ref
     except Exception as e:
         print(f"Error creating document in collection {collection.id}: {e}")
         print(f"Data: {data}")
         print(f"Document ID: {doc_ref.id}")
-        return None
+        return None, None  # Return None if creation fails
 
 def database_update(collection, doc_id, data):
     """
