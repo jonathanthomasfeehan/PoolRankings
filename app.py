@@ -138,7 +138,7 @@ def displayRankings():
                 'FirstName': record['FirstName'],
                 'LastName': record['LastName'],
             })
-    if current_user.logged_in:
+    if not current_user.is_anonymous:
         return render_template('showRankings.html', scores=final, name = current_user.name, displayUsername = current_user.displayUsername, username = current_user.username, isloggedin = current_user.is_active)  
     else:
         # If user is not logged in, display rankings without user-specific data
