@@ -29,7 +29,7 @@ def logged_in_user(monkeypatch):
     mock_user.id = 1
     mock_user.name = 'Test User'
     mock_user.username = 'testuser'
-    mock_user.displayUsername = 'Test User'
+    mock_user.displayUsername = True
     mock_user.is_active = True
 
     monkeypatch.setattr('flask_login.utils._get_user', lambda: mock_user)

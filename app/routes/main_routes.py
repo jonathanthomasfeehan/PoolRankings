@@ -29,6 +29,7 @@ def displayRankings():
     # Sort data by rating in descending order
     final = []
     for record in data:
+        print(record)
         if record['DisplayUsername'] == 'true':
             final.append({
                 'Rating': record['Rating'],
@@ -100,12 +101,14 @@ def pendingMatches():
 @login_required
 def proposeMatchRequest():
     data=request.values
-    opponentCheck = logic.checkValidOpponent(data)
-    if opponentCheck[1] != 200:
-        return opponentCheck[0], opponentCheck[1]
+    player1 = data['PlayerUsername1']
+    player2 = data['PlayerUsername2']
+    opponentCheck = logic.checkValidOpponent(player1, player2)
+    if opponentCheck["code"] != 200:
+        return opponentCheck["message"], opponentCheck["code"]
     database.database_create(database.PENDING_MATCHES, {
         "Player1": current_user.username,
-        "Player2": data['PlayerUsername2'],
+        "Player2": player2,
         "Status": 0,
         "Date_Proposed": datetime.datetime.now(),
         "Date_Expired": datetime.datetime.now() + datetime.timedelta(days=3)

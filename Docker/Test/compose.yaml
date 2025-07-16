@@ -20,9 +20,11 @@ services:
     volumes:
       - ./firebase.json:/home/node/firebase.json
       - ./firestore.rules:/home/node/firestore.rules
+    init: true
+    stop_signal: SIGINT 
 
 
-  dev_flask_app:
+  test_runner:
     build:
       context: .
     depends_on:
@@ -31,10 +33,13 @@ services:
       - FIRESTORE_EMULATOR_HOST=firebase-emulator:8080
       - FIRESTORE_PROJECT_ID=demo-project
       - GOOGLE_CLOUD_PROJECT=demo-project
+      - GCLOUD_PROJECT=demo-project
+      - FIREBASE_AUTH_EMULATOR_HOST=localhost:9099
     volumes:
       - ../../.:/app
       - ../../src/templates:/templates
       - ../../src/static:/static
+      - ./coverage_reports:/app/htmlcov
     working_dir: /app
     ports:
       - 5000:5000

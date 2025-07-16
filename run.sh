@@ -26,4 +26,8 @@ fi
 
 
 # Build and run the application
-docker-compose -f $COMPOSE_FILE up --build
+if [ "$COMPOSE_FILE" == "Docker/Test/compose.yaml" ]; then
+  docker-compose -f $COMPOSE_FILE up --build --abort-on-container-exit --exit-code-from test_runner
+else
+  docker-compose -f $COMPOSE_FILE up --build
+fi

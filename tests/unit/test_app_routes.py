@@ -1,40 +1,42 @@
 from unittest.mock import patch, MagicMock
 
 def test_index_page(client):
-    # """Test the index page of the application."""
-    # response = client.get('/')
-    # assert response.status_code == 200
-    # assert b'Rack It Up' in response.data
-    pass
+    """Test the index page of the application."""
+    response = client.get('/')
+    assert response.status_code == 200
+    assert b'Rack It Up' in response.data
+
 
 def test_propose_match_page(client, logged_in_user):
-    # """Test the propose match page of the application."""
+    """Test the propose match page of the application."""
 
-    # response = client.get('/ProposeMatch')
-    # assert response.status_code == 200
-    # assert b'Propose Match' in response.data
+    response = client.get('/ProposeMatch')
+    assert response.status_code == 200
+    assert b'Propose Match' in response.data
     pass
 
-def test_show_rankings_loggedin(client, captured_templates, logged_in_user):
+@patch("app.database.database_query", return_value = [{'Rating': 500, 'FirstName': "Test User", 'LastName': "User",'Username': "testuser",'DisplayUsername': True}])
+def test_show_rankings_loggedin(database_mock_query, client, captured_templates, logged_in_user):
     """Test the show rankings page of the application."""
-    # # Look into mocking the database if needed
-    # response = client.get('/showRankings')
-    # assert len(captured_templates) == 1
-    # for template in captured_templates:
-    #     template, context = template
-    #     if template == 'showRankings.html':
-    #         assert context['name'] == logged_in_user.name
-    #         assert context['displayUsername'] == logged_in_user.displayUsername
-    #         assert context['username'] == logged_in_user.username
-    #         assert context['isloggedin'] == logged_in_user.is_active
-    # assert response.status_code == 200
-    # assert b'Rankings' in response.data
+    # Look into mocking the database if needed
+    response = client.get('/showRankings')
+    assert len(captured_templates) == 1
+    for template in captured_templates:
+        template, context = template
+        if template == 'showRankings.html':
+            assert context['FirstName'] == logged_in_user.name
+            assert context['DisplayUsername'] == logged_in_user.displayUsername
+            assert context['Username'] == logged_in_user.username
+            assert context['isloggedin'] == logged_in_user.is_active
+    assert response.status_code == 200
+    assert b'Rankings' in response.data
 
-def test_show_rankings_notloggedin(client):
+def test_show_rankings_notloggedin(client, captured_templates):
     """Test the show rankings page of the application when not logged in."""
-    # response = client.get('/showRankings')
-    # assert response.status_code == 200
-    # assert b'Rankings' in response.data
+    response = client.get('/showRankings')
+    assert len(captured_templates) == 1
+    assert response.status_code == 200
+    assert b'Rankings' in response.data
 
 
 

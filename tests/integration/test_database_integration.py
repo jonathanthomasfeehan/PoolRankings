@@ -4,6 +4,8 @@ import pytest
 import json
 import google.cloud.firestore_v1 as firestore
 import os
+import google.auth.credentials
+from google.api_core import exceptions as google_exceptions
 
 @pytest.fixture(scope='module', autouse=True)
 def seed_database():
@@ -18,6 +20,7 @@ def seed_database():
             doc_ref = collection.document(doc['id'])
             doc_ref.set(doc)
     
+
 
 def test_emulator_environment():
     """Test if the Firestore emulator is being used."""
@@ -50,8 +53,8 @@ def test_database_create():
     # db.database_create()
 
 
-def test_database_create_failure():
-    """Test the database_create function with failure scenario."""
+
+
 
 def database_update():
     """Test the database_update function."""
