@@ -28,14 +28,15 @@ jobs:
         run: |
           docker-compose -f Docker/Test/compose.yaml up --build --abort-on-container-exit --exit-code-from test_runner
 
+          
+      - name: Install GitHub CLI
+        run: sudo apt install gh -y
+
       - name: Create PR from develop to main
         if: ${{ success() }}
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: main
-          branch: develop
-          title: "CI: Auto PR from develop to main"
-          body: |
-            Dockerized tests passed with Firebase emulator.
-            Auto-submitting PR for deployment to Render.
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create --base main --head develop \
+            --title "CI: Auto PR from develop to main" \
+            --body "Dockerized tests passed with Firebase emulator. Auto-submitting PR for deployment to Render." || echo "PR already exists"
