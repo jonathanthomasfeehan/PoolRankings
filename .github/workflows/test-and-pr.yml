@@ -1,0 +1,41 @@
+name: Docker CI with Firebase Emulator
+
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+
+jobs:
+  docker-compose-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx (for multi-platform)
+        uses: docker/setup-buildx-action@v3
+
+      - name: Set up Docker Compose
+        run: sudo apt-get update && sudo apt-get install docker-compose -y
+
+      - name: Generate .env file for test_runner
+        run: |
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" > Docker/Test/.env
+
+      - name: Build and run test environment
+        run: |
+          docker-compose -f Docker/Test/compose.yaml up --build --abort-on-container-exit --exit-code-from test_runner
+
+      - name: Create PR from develop to main
+        if: ${{ success() }}
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          branch: develop
+          title: "CI: Auto PR from develop to main"
+          body: |
+            Dockerized tests passed with Firebase emulator.
+            Auto-submitting PR for deployment to Render.
