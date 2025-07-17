@@ -77,4 +77,4 @@ ENV FLASK_ENV=Development
 
 
 
-CMD ["pytest", "--cov=app", "--cov-report=term-missing", "--cov-report=html"]
+CMD ["pytest", "--cov=app", "--cov-report=term"]
