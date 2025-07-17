@@ -9,26 +9,6 @@ import app.database as database
 from flask_cors import CORS
 from typing import Callable
 
-# app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-# app.config['SESSION_COOKIE_HTTPONLY'] = os.getenv('SESSION_COOKIE_HTTPONLY', default=True).lower() == 'true'
-# app.config['SESSION_COOKIE_SECURE'] = os.getenv('SESSION_COOKIE_SECURE', default=True).lower() == 'true'
-# app.config['SESSION_COOKIE_SAMESITE'] = os.getenv('SESSION_COOKIE_SAMESITE', default='Lax')
-# app.config['PREFERRED_URL_SCHEME']='https'
-
-# csrf = CSRFProtect(app)
-# CORS(app)
-# login_manager = LoginManager()
-# login_manager.login_view = 'auth.login'
-# login_manager.init_app(app)
-# app.register_blueprint(auth_blueprint)
-# app.register_blueprint(main_blueprint)
-
-# @login_manager.user_loader
-# def load_user(user_id):
-#         return User.get(user_id)
-
-
-
 
 def calculate_expected(player1: str, player2: str)->float:
     """

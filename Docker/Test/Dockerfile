@@ -18,7 +18,7 @@ WORKDIR /app
 
 # Create a non-privileged user that the app will run under.
 # See https://docs.docker.com/go/dockerfile-user-best-practices/
-ARG UID=10001
+ARG UID=1001
 RUN adduser \
     --disabled-password \
     --gecos "" \
@@ -53,6 +53,9 @@ RUN python -m pip install -r requirements.txt
 RUN pip install pytest python-dotenv
 # TODO: check if needed
 
+# Modify dir access for github actions
+RUN mkdir -p /app/htmlcov && chown -R appuser /app/htmlcov
+
 # Switch to the non-privileged user to run the application.
 USER appuser
 
@@ -74,4 +77,4 @@ ENV FLASK_ENV=Development
 
 
 
-CMD ["pytest", "--cov=app", "--cov-report=term-missing", "--cov-report=html"]
+CMD ["pytest", "--cov=app", "--cov-report=term"]
