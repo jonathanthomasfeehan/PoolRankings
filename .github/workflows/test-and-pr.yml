@@ -20,6 +20,10 @@ jobs:
       - name: Set up Docker Compose
         run: sudo apt-get update && sudo apt-get install docker-compose -y
 
+      - name: Generate .env file for test_runner
+        run: |
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" > Docker/Test/.env
+
       - name: Build and run test environment
         run: |
           docker-compose -f Docker/Test/compose.yaml up --build --abort-on-container-exit --exit-code-from test_runner
