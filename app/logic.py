@@ -10,7 +10,6 @@ from flask_cors import CORS
 from typing import Callable
 
 
-
 def calculate_expected(player1: str, player2: str)->float:
     """
     Calculates likelyhood of player1 winning
