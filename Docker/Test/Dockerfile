@@ -53,6 +53,9 @@ RUN python -m pip install -r requirements.txt
 RUN pip install pytest python-dotenv
 # TODO: check if needed
 
+# Modify dir access for github actions
+RUN mkdir -p /app/htmlcov && chown -R appuser /app/htmlcov
+
 # Switch to the non-privileged user to run the application.
 USER appuser
 
