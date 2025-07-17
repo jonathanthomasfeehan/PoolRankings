@@ -16,6 +16,7 @@ def app():
     app = create_app()
     app.config['TESTING'] = True
     app.config['LOGIN_DISABLED'] = True  # Disable login during tests
+    app.config['WTF_CSRF_ENABLED'] = False
     return app
 
 @pytest.fixture

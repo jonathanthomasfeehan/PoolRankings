@@ -1,5 +1,6 @@
 from unittest.mock import patch, MagicMock
-
+from flask_wtf import CSRFProtect
+import app
 def test_index_page(client):
     """Test the index page of the application."""
     response = client.get('/')
@@ -31,30 +32,31 @@ def test_show_rankings_loggedin(database_mock_query, client, captured_templates,
     assert response.status_code == 200
     assert b'Rankings' in response.data
 
-def test_show_rankings_notloggedin(client, captured_templates):
+@patch("app.database.database_query", return_value = [{'Rating': 500, 'FirstName': "Test User", 'LastName': "User",'Username': "testuser",'DisplayUsername': True}])
+def test_show_rankings_notloggedin(database_mock_query, client, captured_templates):
     """Test the show rankings page of the application when not logged in."""
     response = client.get('/showRankings')
     assert len(captured_templates) == 1
     assert response.status_code == 200
     assert b'Rankings' in response.data
 
-
-
 def test_get_rankings(client):
     """Test the get rankings endpoint of the application."""
     # Mocking the database query to return a sample response
     # TODO: test that it works with emulated database
-    # with patch('app.database.database_query') as mock_query:
-    #     mock_query.return_value = [
-    #         {'Rating': 1500, 'FirstName': 'John', 'LastName': 'Doe'},
-    #         {'Rating': 1400, 'FirstName': 'Jane', 'LastName': 'Smith'}
-    #     ]
-    #     response = client.post('/getRankings')
-    #     assert response.status_code == 200
-    #     data = response.get_json()
-    #     assert len(data) == 2
-    #     assert data[0]['Rating'] == 1500
-    #     assert data[1]['FirstName'] == 'Jane'
+    with patch('app.database.database_query') as mock_query:
+        mock_query.return_value = [
+            {'Rating': 1500, 'FirstName': 'John', 'LastName': 'Doe'},
+            {'Rating': 1400, 'FirstName': 'Jane', 'LastName': 'Smith'}
+        ]
+        response = client.post('/getRankings')
+        print(response.status_code)
+        print(response.get_data(as_text=True))
+        assert response.status_code == 200
+        data = response.get_json()
+        assert len(data) == 2
+        assert data[0]['Rating'] == 1500
+        assert data[1]['FirstName'] == 'Jane'
 
 def test_register_page(client):
     """Test the registration page of the application."""

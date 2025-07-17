@@ -41,14 +41,20 @@ def displayRankings():
                 'FirstName': record['FirstName'],
                 'LastName': record['LastName'],
             })
-    return render_template('showRankings.html', scores=final, name = current_user.name, displayUsername = current_user.displayUsername, username = current_user.username, isloggedin = current_user.is_active)
+    if not current_user.is_anonymous:
+        return render_template('showRankings.html', scores=final, name = current_user.name, displayUsername = current_user.displayUsername, username = current_user.username, isloggedin = current_user.is_active)  
+    else:
+        # If user is not logged in, display rankings without user-specific data
+        return render_template('showRankings.html', scores=final, name = '', displayUsername = '', username = '', isloggedin = False)
 
 
 
 @main.route('/getRankings' , methods = ['POST'])
 def getRankings():
     # TODO: Return ratings in order
+    # TODO: Catch errors here
     data = database.database_query(database.USERS, filters=[], fields= ['Rating', 'FirstName', 'LastName'])
+    print(data)
     data = jsonify(data)
     return data, 200
 
