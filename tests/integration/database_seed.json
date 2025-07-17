@@ -1,0 +1,21 @@
+{
+  "USERS": [
+    { "id": "test-user-1", "Username": "tester1", "rating": 1200, "password" : "pbkdf2:sha256:600000$Kft2hiY86ujLIeQw$684a140fc6a7955ce3d600d630cc347a51adb1060646afc90329a0e42467c537", "Matches" : 5, "FirstName" : "Curtis", "LastName": "Mullican", "DisputedMatches" : 0, "DisplayUsername" : "true" },
+    { "id": "test-user-2", "Username": "tester2", "rating": 1500, "password" : "pbkdf2:sha256:600000$Kft2hiY86ujLIeQw$684a140fc6a7955ce3d600d630cc347a51adb1060646afc90329a0e42467c537", "Matches" : 5, "FirstName" : "Curtis", "LastName": "Mullican", "DisputedMatches" : 0, "DisplayUsername" : "true" },
+    { "id": "test-user-3", "Username": "tester3", "rating": 1300, "password" : "pbkdf2:sha256:600000$Kft2hiY86ujLIeQw$684a140fc6a7955ce3d600d630cc347a51adb1060646afc90329a0e42467c537", "Matches" : 5, "FirstName" : "Curtis", "LastName": "Mullican", "DisputedMatches" : 0, "DisplayUsername" : "true" },
+    { "id": "test-user-4", "Username": "tester4", "rating": 1700, "password" : "pbkdf2:sha256:600000$Kft2hiY86ujLIeQw$684a140fc6a7955ce3d600d630cc347a51adb1060646afc90329a0e42467c537", "Matches" : 5, "FirstName" : "Curtis", "LastName": "Mullican", "DisputedMatches" : 0, "DisplayUsername" : "true" }
+
+  ],
+  "MATCHES": [
+    { "Date": "May 3, 2025 at 10:25:23AM UTC-5" , "Player1": "tester1", "Player2": "tester2", "Player1_new_score": 514.75569, "Player1_previous_score": 500, "Player2_new_score": 458.169958, "Player2_previous_score": 482.9525, "id": "match-1"},
+    { "Date": "May 3, 2025 at 10:30:23AM UTC-5" , "Player1": "tester3", "Player2": "tester4", "Player1_new_score": 484, "Player1_previous_score": 500, "Player2_new_score": 516, "Player2_previous_score": 500, "id": "match-2"},
+    { "Date": "May 3, 2025 at 10:35:23AM UTC-5" , "Player1": "tester1", "Player2": "tester3", "Player1_new_score": 514.56469, "Player1_previous_score": 500, "Player2_new_score": 454.1721, "Player2_previous_score": 468.736306, "id": "match-3"},
+    { "Date": "May 3, 2025 at 10:40:23AM UTC-5" , "Player1": "tester2", "Player2": "tester4", "Player1_new_score": 472.92565, "Player1_previous_score": 454.1721, "Player2_new_score": 495.81, "Player2_previous_score": 514.564127, "id": "match-4"}
+  ],
+    "PENDING_MATCHES": [
+        { "id": "pending-match-1", "player1": "tester1", "player2": "tester2", "status": 0, "Date_Proposed": "May 3, 2025 at 10:40:23AM UTC-5", "Date_Expired": "May 3, 2025 at 11:40:23AM UTC-5" },
+        { "id": "pending-match-2", "player1": "tester3", "player2": "tester4", "status": 2, "Date_Proposed": "May 3, 2025 at 10:40:23AM UTC-5", "Date_Expired": "May 3, 2025 at 11:40:23AM UTC-5" },
+        { "id": "pending-match-3", "player1": "tester1", "player2": "tester3", "status": 3, "Date_Proposed": "May 3, 2025 at 10:40:23AM UTC-5", "Date_Expired": "May 3, 2025 at 11:40:23AM UTC-5" },
+        { "id": "pending-match-4", "player1": "tester2", "player2": "tester4", "status": 0, "Date_Proposed": "May 3, 2025 at 10:40:23AM UTC-5", "Date_Expired": "May 3, 2025 at 11:40:23AM UTC-5" }
+    ]
+}

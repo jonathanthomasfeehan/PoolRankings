@@ -11,25 +11,25 @@
         {% if isloggedin %}
 
         <li class="nav-item">
-            <a class="nav-link text-white active" aria-current="page" href="{{ url_for('profile') }}">Profile</a>
+            <a class="nav-link text-white active" aria-current="page" href="{{ url_for('main.profile') }}">Profile</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-white active" aria-current="page" href="{{ url_for('proposeMatch_page') }}">Propose Match</a>
+            <a class="nav-link text-white active" aria-current="page" href="{{ url_for('main.proposeMatch_page') }}">Propose Match</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link text-white active" aria-current="page" href="{{ url_for('pendingMatches') }}">Pending Maches</a>
+            <a class="nav-link text-white active" aria-current="page" href="{{ url_for('main.pendingMatches') }}">Pending Maches</a>
         </li>
 
         {% else %}
 
         <li class="nav-item">
-            <a class="nav-link text-white active" aria-current="page" href="{{ url_for('show_registration') }}">Register</a>
+            <a class="nav-link text-white active" aria-current="page" href="{{ url_for('main.show_registration') }}">Register</a>
         </li>
 
         {% endif %} 
 
         <li class="nav-item">
-            <a class="nav-link text-white active" href="{{ url_for('displayRankings') }}">Show Rankings</a>
+            <a class="nav-link text-white active" href="{{ url_for('main.displayRankings') }}">Show Rankings</a>
         </li>
 
         </ul>
